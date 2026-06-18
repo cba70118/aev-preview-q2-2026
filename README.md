@@ -1,34 +1,58 @@
-# Agent Eye View — Demo
+# Agent Eye View — Demo (Vercel)
 
 A stakeholder-facing preview of **Agent Eye View**, a Search Influence diagnostic that shows what an AI agent or crawler actually perceives on a web page: the readable content, the structured data it finds, the accessibility/semantic outline, and the answer an agent could confidently assemble about the business.
 
-Paste a page's HTML and it runs **100% in the browser** — nothing is uploaded, fetched, or stored. Click **Load sample page** to see it work out of the box.
+Two ways to use it:
 
-> This is a public-but-unlisted demo: `robots.txt` blocks search indexing so the URL stays shareable-only. It uses fictional sample data and is for demonstration, not a production deployment.
+- **Analyze a URL** (default) — type a page URL. A small serverless function (`/api/fetch`) fetches the page **server-side** and returns its raw HTML, which the tool then analyzes in your browser. This is the same raw HTML most AI crawlers see (JavaScript is **not** executed).
+- **Paste HTML** — paste a page's source. Runs 100% in your browser; nothing is sent anywhere.
+
+> Public-but-unlisted demo: `robots.txt` blocks search indexing so the URL stays shareable-only. Uses fictional sample data; for demonstration, not a production deployment.
 
 ---
 
-## Live demo
+## Why a serverless function?
 
-GitHub Pages serves the tool from `index.html` at the repo's Pages URL (see the repo's **Settings → Pages**, or the link in the repo description).
+A static page can't fetch another site's HTML — browser CORS / same-origin policy blocks it. The `/api/fetch` function runs outside the browser (where CORS doesn't apply), so the "Analyze a URL" mode works. The analysis itself stays entirely client-side. The function is hardened against SSRF (public http(s) hosts only, redirect re-validation, private/metadata IP blocking, timeout, size cap, HTML-only).
 
-## What it checks
+## Deploy to Vercel (one-time)
 
-- **AI Access & Crawlability** — robots/snippet directives (noindex, nosnippet, max-snippet, noai, `data-nosnippet`), JS-dependency/content-visibility risk, canonical
-- **Readable content** — distilled main text, depth, and extractable structure (lists, tables, Q&A, answer-first)
-- **Structured data** — JSON-LD types, schema completeness vs missing properties, `sameAs`/author/freshness
-- **Semantic & accessibility outline** — landmarks, alt-text coverage, link-text quality, form labels, language
-- **The answer an agent could assemble** — interactive query simulator, an 8-intent answerability matrix, per-fact confidence/provenance, and the most quotable snippet
-- **Agent-readiness score + prioritized fixes**, exportable as Markdown or print-to-PDF
+This repo is zero-config for Vercel: it serves `index.html` statically and runs `api/fetch.js` as a serverless function.
 
-## Updating the demo
+1. Go to **vercel.com → Add New… → Project**.
+2. **Import** this GitHub repo (`aev-preview-q2-2026`).
+3. Framework preset: **Other** (no build step needed). Click **Deploy**.
+4. After deploy, the tool is live at `https://<project>.vercel.app/` and the URL mode works immediately.
 
-The page is a single self-contained file. To refresh it, re-copy the source tool over `index.html` and push:
+Every `git push` to `main` then auto-deploys.
+
+### Local preview (optional)
+
+```bash
+npm i -g vercel
+vercel dev        # serves index.html + /api/fetch locally
+```
+
+## Structure
+
+```
+index.html      the tool (single self-contained file)
+api/fetch.js     serverless server-side fetch for "Analyze a URL" mode
+vercel.json      function config (15s max duration)
+package.json     marks the function as ESM (Node ≥18)
+robots.txt       Disallow: / (keeps the demo unindexed)
+```
+
+## Updating the tool
+
+`index.html` is a copy of the source tool. To refresh it:
 
 ```bash
 cp ../si-agent-eye-view.html index.html
 git add index.html && git commit -m "Update Agent Eye View demo" && git push
 ```
+
+(The source tool keeps the same `/api/fetch` endpoint constant, so URL mode keeps working after a re-copy. When opened as a plain local file with no backend, URL mode fails gracefully and prompts you to paste instead.)
 
 ---
 

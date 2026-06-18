@@ -1,0 +1,8 @@
+{
+  "name": "agent-eye-view-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Agent Eye View demo — static tool + serverless URL fetch (Vercel)",
+  "engines": { "node": ">=18" }
+}

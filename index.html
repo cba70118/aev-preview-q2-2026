@@ -151,6 +151,77 @@
             font-style: italic;
         }
 
+        /* ═══ MODE TOGGLE (pill segmented control) ═══ */
+        .mode-toggle {
+            display: inline-flex;
+            gap: 0.25rem;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 0.25rem;
+            margin-bottom: 1.1rem;
+        }
+        .mode-btn {
+            font-family: var(--font);
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            border-radius: 999px;
+            padding: 0.5rem 1.25rem;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .mode-btn:hover { color: var(--navy); }
+        .mode-btn.active {
+            background: var(--navy);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .mode-pane[hidden] { display: none; }
+
+        /* URL input row */
+        .url-row {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: stretch;
+        }
+        input#url-input {
+            flex: 1;
+            min-width: 220px;
+            font-family: var(--font);
+            font-size: 0.92rem;
+            color: var(--text);
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 0.85rem 1.1rem;
+            transition: border-color var(--transition);
+        }
+        input#url-input:focus {
+            outline: none;
+            border-color: var(--teal);
+            background: var(--bg);
+        }
+        .url-row .btn { white-space: nowrap; }
+
+        .fetched-note {
+            font-size: 0.76rem;
+            color: var(--text-secondary);
+        }
+        .fetched-note .fn-url {
+            font-family: var(--mono);
+            color: var(--navy);
+            word-break: break-all;
+        }
+        @media (max-width: 540px) {
+            .url-row .btn { flex: 1; text-align: center; }
+        }
+
         textarea#html-input {
             width: 100%;
             min-height: 220px;
@@ -1258,7 +1329,7 @@
     <div class="si-header">
         <div class="si-header-badge">Free Diagnostic</div>
         <h1>Agent Eye View: See Your Page The Way an AI Agent Does</h1>
-        <p>Paste your page's HTML source and we'll show you exactly what an AI crawler can read, the structured data it finds, and the answer it could confidently assemble about your business.</p>
+        <p>Enter a URL or paste a page's HTML source and we'll show you exactly what an AI crawler can read, the structured data it finds, and the answer it could confidently assemble about your business.</p>
         <div class="ai-engines">
             <span class="ai-engine"><span class="dot"></span> ChatGPT Agent</span>
             <span class="ai-engine"><span class="dot"></span> Gemini</span>
@@ -1271,16 +1342,42 @@
 
         <!-- INPUT -->
         <div class="input-panel">
-            <div class="input-label">
-                <h2>Paste your page's HTML source</h2>
-                <span class="note">View Source &rarr; Select All &rarr; Paste here</span>
+
+            <!-- MODE TOGGLE -->
+            <div class="mode-toggle" role="tablist" aria-label="Input mode">
+                <button class="mode-btn active" id="mode-url" role="tab" aria-selected="true" onclick="setMode('url')">Analyze a URL</button>
+                <button class="mode-btn" id="mode-paste" role="tab" aria-selected="false" onclick="setMode('paste')">Paste HTML</button>
             </div>
-            <textarea id="html-input" spellcheck="false" placeholder="Paste the full HTML of one of your web pages here (Ctrl/Cmd+U in your browser to view source, then copy everything)…"></textarea>
-            <div class="input-actions">
-                <button class="btn btn-primary" id="btn-analyze" onclick="analyze()">Analyze</button>
-                <button class="btn btn-secondary" id="btn-sample" onclick="loadSample()">Load sample page</button>
-                <span class="privacy-note"><span class="lock">&#128274;</span> Runs 100% in your browser. Nothing is uploaded, fetched, or stored.</span>
+
+            <!-- URL MODE -->
+            <div class="mode-pane" id="pane-url">
+                <div class="input-label">
+                    <h2>Enter a page URL</h2>
+                </div>
+                <div class="url-row">
+                    <input type="url" id="url-input" spellcheck="false" placeholder="https://yourpage.com/about" aria-label="Page URL to analyze">
+                    <button class="btn btn-primary" id="btn-fetch" onclick="analyzeUrl()">Fetch &amp; analyze</button>
+                </div>
+                <div class="input-actions">
+                    <span id="fetched-note" class="fetched-note"></span>
+                    <span class="privacy-note"><span class="lock">&#128274;</span> The page is fetched by our server and read as raw HTML — the way most AI crawlers see it (JavaScript is not executed).</span>
+                </div>
             </div>
+
+            <!-- PASTE MODE -->
+            <div class="mode-pane" id="pane-paste" hidden>
+                <div class="input-label">
+                    <h2>Paste your page's HTML source</h2>
+                    <span class="note">View Source &rarr; Select All &rarr; Paste here</span>
+                </div>
+                <textarea id="html-input" spellcheck="false" placeholder="Paste the full HTML of one of your web pages here (Ctrl/Cmd+U in your browser to view source, then copy everything)…"></textarea>
+                <div class="input-actions">
+                    <button class="btn btn-primary" id="btn-analyze" onclick="analyze()">Analyze</button>
+                    <button class="btn btn-secondary" id="btn-sample" onclick="loadSample()">Load sample page</button>
+                    <span class="privacy-note"><span class="lock">&#128274;</span> Runs 100% in your browser. Nothing is uploaded, fetched, or stored.</span>
+                </div>
+            </div>
+
             <div class="inline-msg" id="inline-msg"></div>
         </div>
 
@@ -1381,6 +1478,9 @@
     </div>
 
     <script>
+        /* Single place to configure the server-side fetch endpoint. */
+        const FETCH_ENDPOINT = '/api/fetch';
+
         /* ════════════════════════════════════════════
            UTILITIES
            ════════════════════════════════════════════ */
@@ -2844,6 +2944,49 @@
         }
         function hideMsg() { document.getElementById('inline-msg').classList.remove('show'); }
 
+        /* Mode toggle — switches between URL and Paste input panes. */
+        function setMode(mode) {
+            const isUrl = mode === 'url';
+            const urlBtn = document.getElementById('mode-url');
+            const pasteBtn = document.getElementById('mode-paste');
+            urlBtn.classList.toggle('active', isUrl);
+            pasteBtn.classList.toggle('active', !isUrl);
+            urlBtn.setAttribute('aria-selected', isUrl ? 'true' : 'false');
+            pasteBtn.setAttribute('aria-selected', !isUrl ? 'true' : 'false');
+            document.getElementById('pane-url').hidden = !isUrl;
+            document.getElementById('pane-paste').hidden = isUrl;
+            hideMsg();
+            const focusEl = document.getElementById(isUrl ? 'url-input' : 'html-input');
+            if (focusEl) focusEl.focus();
+        }
+
+        /* Core pipeline shared by both input modes. */
+        function runAnalysis(rawHtml) {
+            hideMsg();
+            const raw = String(rawHtml || '').trim();
+            if (!raw) {
+                showMsg('No HTML to analyze — the page source came back empty.');
+                document.getElementById('results').classList.remove('show');
+                return false;
+            }
+            if (!/[<][a-zA-Z!\/]/.test(raw)) {
+                showMsg('That doesn\'t look like HTML. It should contain tags like &lt;html&gt;, &lt;div&gt;, &lt;p&gt;.');
+                document.getElementById('results').classList.remove('show');
+                return false;
+            }
+            let r;
+            try {
+                r = analyzeDoc(raw);
+                scoreDoc(r);
+            } catch (err) {
+                showMsg('Something went wrong parsing that HTML. It may be severely malformed — try again. (' + esc(err.message) + ')');
+                return false;
+            }
+            render(r);
+            return true;
+        }
+
+        /* Paste mode: reads the textarea, then runs the shared pipeline. */
         function analyze() {
             hideMsg();
             const raw = document.getElementById('html-input').value.trim();
@@ -2852,20 +2995,79 @@
                 document.getElementById('results').classList.remove('show');
                 return;
             }
-            if (!/[<][a-zA-Z!\/]/.test(raw)) {
-                showMsg('That doesn\'t look like HTML. Paste the full page source (it should contain tags like &lt;html&gt;, &lt;div&gt;, &lt;p&gt;).');
+            runAnalysis(raw);
+        }
+
+        /* URL mode: fetch the page server-side, then run the shared pipeline. */
+        async function analyzeUrl() {
+            hideMsg();
+            const noteEl = document.getElementById('fetched-note');
+            if (noteEl) noteEl.innerHTML = '';
+
+            const inputEl = document.getElementById('url-input');
+            let url = (inputEl ? inputEl.value : '').trim();
+            if (!url) {
+                showMsg('Please enter a URL to analyze (e.g. <strong>https://yourpage.com/about</strong>), or switch to <strong>Paste HTML</strong>.');
                 document.getElementById('results').classList.remove('show');
                 return;
             }
-            let r;
-            try {
-                r = analyzeDoc(raw);
-                scoreDoc(r);
-            } catch (err) {
-                showMsg('Something went wrong parsing that HTML. It may be severely malformed — try copying the source again. (' + esc(err.message) + ')');
+            if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+            // Basic sanity check: must look like https://host.tld...
+            if (!/^https?:\/\/[^\s.\/]+\.[^\s\/]+/i.test(url)) {
+                showMsg('That doesn\'t look like a valid URL. Try something like <strong>https://yourpage.com/about</strong>.');
+                document.getElementById('results').classList.remove('show');
                 return;
             }
-            render(r);
+
+            const btn = document.getElementById('btn-fetch');
+            const origLabel = btn ? btn.textContent : '';
+            if (btn) { btn.textContent = 'Fetching…'; btn.disabled = true; }
+
+            try {
+                let resp;
+                try {
+                    resp = await fetch(FETCH_ENDPOINT + '?url=' + encodeURIComponent(url));
+                } catch (netErr) {
+                    // fetch threw (TypeError, etc.) — endpoint unreachable (e.g. opened as a local file).
+                    showMsg('Automatic URL fetch isn\'t available in this version. Switch to <strong>Paste HTML</strong> and paste the page source instead.');
+                    document.getElementById('results').classList.remove('show');
+                    return;
+                }
+
+                // Endpoint missing entirely (static hosting) → 404, etc.
+                if (resp.status === 404) {
+                    showMsg('Automatic URL fetch isn\'t available in this version. Switch to <strong>Paste HTML</strong> and paste the page source instead.');
+                    document.getElementById('results').classList.remove('show');
+                    return;
+                }
+
+                let data = null;
+                try {
+                    data = await resp.json();
+                } catch (parseErr) {
+                    // Response wasn't JSON — the endpoint isn't the one we expect.
+                    showMsg('Automatic URL fetch isn\'t available in this version. Switch to <strong>Paste HTML</strong> and paste the page source instead.');
+                    document.getElementById('results').classList.remove('show');
+                    return;
+                }
+
+                if (resp.ok && data && data.html) {
+                    const ok = runAnalysis(data.html);
+                    if (ok && noteEl) {
+                        const shown = data.finalUrl || url;
+                        noteEl.innerHTML = 'Fetched: <span class="fn-url">' + esc(truncate(shown, 90)) + '</span>';
+                    }
+                } else if (data && data.error) {
+                    // Structured error from the endpoint.
+                    showMsg(esc(data.error));
+                    document.getElementById('results').classList.remove('show');
+                } else {
+                    showMsg('Couldn\'t fetch that page. Try again, or switch to <strong>Paste HTML</strong> and paste the source instead.');
+                    document.getElementById('results').classList.remove('show');
+                }
+            } finally {
+                if (btn) { btn.textContent = origLabel; btn.disabled = false; }
+            }
         }
 
         /* ════════════════════════════════════════════
@@ -2876,6 +3078,16 @@
             hideMsg();
             analyze();
         }
+
+        /* Enter in the URL field triggers a fetch & analyze. */
+        (function wireUrlEnter() {
+            const inputEl = document.getElementById('url-input');
+            if (inputEl) {
+                inputEl.addEventListener('keydown', function (ev) {
+                    if (ev.key === 'Enter') { ev.preventDefault(); analyzeUrl(); }
+                });
+            }
+        })();
 
         const SAMPLE_HTML = [
 '<!DOCTYPE html>',
