@@ -1,0 +1,2972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Eye View — See Your Page As an AI Agent Does | Search Influence</title>
+    <meta name="description" content="Paste your page's HTML and see exactly what an AI agent or crawler can read, extract, and confidently say about your business. 100% in-browser, no crawling.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #254A5D;
+            --navy-dark: #1a3644;
+            --teal: #4EB1CD;
+            --teal-light: #82c0c7;
+            --teal-bg: rgba(78, 177, 205, 0.08);
+            --orange: #EA661A;
+            --orange-hover: #DF5528;
+            --purple: #B85695;
+            --purple-light: rgba(184, 86, 149, 0.1);
+
+            --text: #333333;
+            --text-secondary: #666666;
+            --text-light: #999999;
+            --bg: #ffffff;
+            --bg-alt: #F5F5F5;
+            --bg-section: #EDEDED;
+            --border: #E0E0E0;
+
+            --green: #5cb85c;
+            --green-bg: rgba(92,184,92,0.12);
+            --red: #d9534f;
+            --red-bg: rgba(217,83,79,0.1);
+
+            --font: 'Open Sans', Arial, sans-serif;
+            --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --transition: 0.2s ease;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font);
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ═══ HEADER ═══ */
+        .si-header {
+            background: var(--navy);
+            color: white;
+            text-align: center;
+            padding: 3rem 1.5rem 2.5rem;
+        }
+
+        .si-header-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--teal);
+            margin-bottom: 1.25rem;
+        }
+
+        .si-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 0.75rem;
+            max-width: 720px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .si-header p {
+            font-size: 1rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.75);
+            max-width: 580px;
+            margin: 0 auto;
+        }
+
+        .si-header .ai-engines {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .si-header .ai-engine {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .ai-engine .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--teal);
+        }
+
+        /* ═══ MAIN CONTAINER ═══ */
+        .wrap {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* ═══ INPUT PANEL ═══ */
+        .input-panel {
+            margin-bottom: 2rem;
+        }
+
+        .input-label {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-label h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .input-label .note {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        textarea#html-input {
+            width: 100%;
+            min-height: 220px;
+            font-family: var(--mono);
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: var(--text);
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.1rem;
+            resize: vertical;
+            transition: border-color var(--transition);
+        }
+
+        textarea#html-input:focus {
+            outline: none;
+            border-color: var(--teal);
+            background: var(--bg);
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .privacy-note {
+            font-size: 0.74rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-left: auto;
+        }
+
+        .privacy-note .lock { color: var(--teal); }
+
+        /* ═══ BUTTONS ═══ */
+        .btn {
+            padding: 0.75rem 2rem;
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition);
+            border: 2px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+            border-color: var(--orange);
+        }
+
+        .btn-primary:hover {
+            background: var(--orange-hover);
+            border-color: var(--orange-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(234,102,26,0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--navy);
+            border-color: var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--navy);
+            background: var(--bg-alt);
+        }
+
+        /* ═══ ERROR / EMPTY ═══ */
+        .inline-msg {
+            display: none;
+            background: var(--red-bg);
+            border: 1px solid rgba(217,83,79,0.3);
+            color: #a13b38;
+            border-radius: var(--radius);
+            padding: 0.85rem 1.1rem;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        .inline-msg.show { display: block; }
+
+        /* ═══ RESULTS ═══ */
+        .results {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .results.show { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ═══ SCORE HERO ═══ */
+        .score-hero {
+            background: var(--navy);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(78,177,205,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .score-hero-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--teal);
+            margin-bottom: 0.5rem;
+        }
+
+        .score-number {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+            position: relative;
+        }
+
+        .score-number sup {
+            font-size: 1.75rem;
+            font-weight: 600;
+            vertical-align: super;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .score-grade {
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        .score-bar-outer {
+            max-width: 400px;
+            margin: 0 auto;
+            height: 8px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .score-bar-inner {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+            width: 0%;
+        }
+
+        .score-bar-inner.low { background: var(--orange); }
+        .score-bar-inner.mid { background: var(--teal); }
+        .score-bar-inner.high { background: var(--green); }
+
+        /* ═══ PANELS ═══ */
+        .panel {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem 1.6rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .panel-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .panel-icon.c1 { background: rgba(234,102,26,0.1); }
+        .panel-icon.c2 { background: rgba(78,177,205,0.12); }
+        .panel-icon.c3 { background: rgba(184,86,149,0.1); }
+        .panel-icon.c4 { background: rgba(37,74,93,0.1); }
+        .panel-icon.c5 { background: rgba(92,184,92,0.12); }
+
+        .panel-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .panel-sub {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+            padding-left: calc(38px + 0.75rem);
+        }
+
+        @media (max-width: 540px) {
+            .panel-sub { padding-left: 0; }
+        }
+
+        /* ═══ HEADLINE UNDERSTANDING ═══ */
+        .agent-headline {
+            background: var(--bg-alt);
+            border-left: 3px solid var(--teal);
+            border-radius: var(--radius);
+            padding: 1rem 1.1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .agent-headline .lbl {
+            font-size: 0.66rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-light);
+            margin-bottom: 0.2rem;
+        }
+
+        .agent-headline .title-line {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.4;
+        }
+
+        .agent-headline .desc-line {
+            font-size: 0.86rem;
+            color: var(--text-secondary);
+            margin-top: 0.35rem;
+        }
+
+        .agent-headline .missing {
+            color: var(--orange);
+            font-style: italic;
+            font-weight: 600;
+        }
+
+        /* ═══ STAT ROW ═══ */
+        .stat-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+        }
+
+        .stat {
+            flex: 1;
+            min-width: 110px;
+            background: var(--bg-alt);
+            border-radius: var(--radius);
+            padding: 0.85rem 1rem;
+            text-align: center;
+        }
+
+        .stat .val {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1.1;
+        }
+
+        .stat .lbl {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-light);
+            margin-top: 0.2rem;
+        }
+
+        .depth-pill {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.15rem 0.6rem;
+            border-radius: 12px;
+        }
+        .depth-pill.thin { background: var(--orange); color: white; }
+        .depth-pill.adequate { background: var(--teal); color: white; }
+        .depth-pill.rich { background: var(--green); color: white; }
+
+        /* ═══ READABLE TEXT BOX ═══ */
+        .readable-box {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem 1.1rem;
+            font-size: 0.86rem;
+            color: var(--text);
+            max-height: 280px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.55;
+        }
+
+        .readable-box.collapsed {
+            max-height: 140px;
+        }
+
+        /* ═══ STATUS LINES ═══ */
+        .check-line {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+        .check-line:last-child { border-bottom: none; }
+
+        .check-badge {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+        .check-badge.pass { background: var(--green-bg); color: var(--green); }
+        .check-badge.warn { background: rgba(234,102,26,0.12); color: var(--orange); }
+        .check-badge.fail { background: var(--red-bg); color: var(--red); }
+
+        .check-body { flex: 1; min-width: 0; }
+
+        .check-body h4 {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.1rem;
+        }
+
+        .check-body p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* expandable offender list */
+        .offenders {
+            margin-top: 0.4rem;
+        }
+
+        .offenders-toggle {
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: var(--teal);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            font-family: var(--font);
+        }
+        .offenders-toggle:hover { text-decoration: underline; }
+
+        .offenders-list {
+            display: none;
+            margin-top: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-alt);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+        .offenders-list.show { display: block; }
+
+        .offenders-list li {
+            list-style: none;
+            font-family: var(--mono);
+            font-size: 0.74rem;
+            color: var(--text-secondary);
+            padding: 0.22rem 0;
+            border-bottom: 1px dashed var(--border);
+            word-break: break-word;
+        }
+        .offenders-list li:last-child { border-bottom: none; }
+
+        /* ═══ JSON-LD / SCHEMA CHIPS ═══ */
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .chip {
+            font-size: 0.74rem;
+            font-weight: 600;
+            padding: 0.25rem 0.7rem;
+            border-radius: 14px;
+            background: var(--teal-bg);
+            color: var(--navy);
+            border: 1px solid var(--teal-light);
+        }
+        .chip.muted {
+            background: var(--bg-alt);
+            color: var(--text-light);
+            border-color: var(--border);
+        }
+
+        .subhead {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-light);
+            margin: 1.1rem 0 0.6rem;
+        }
+        .subhead:first-child { margin-top: 0; }
+
+        /* code block w/ copy */
+        .code-wrap { position: relative; margin-bottom: 0.5rem; }
+        .code-block {
+            background: var(--navy-dark);
+            color: #d6e4ea;
+            border-radius: var(--radius);
+            padding: 0.9rem 1rem;
+            font-family: var(--mono);
+            font-size: 0.74rem;
+            line-height: 1.45;
+            max-height: 220px;
+            overflow: auto;
+            white-space: pre;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.25rem 0.6rem;
+            cursor: pointer;
+            font-family: var(--font);
+            transition: background var(--transition);
+        }
+        .copy-btn:hover { background: var(--teal); }
+        .copy-btn.copied { background: var(--green); }
+
+        /* ═══ HEADING TREE ═══ */
+        .heading-tree {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+        }
+        .heading-tree .hnode {
+            padding: 0.15rem 0;
+            color: var(--text);
+            border-left: 2px solid var(--border);
+            margin-left: 2px;
+        }
+        .heading-tree .htag {
+            font-weight: 700;
+            color: var(--teal);
+            margin-right: 0.4rem;
+        }
+        .heading-tree .hflag {
+            color: var(--orange);
+            font-weight: 700;
+            font-size: 0.72rem;
+            margin-left: 0.4rem;
+        }
+
+        /* ═══ META TAG LIST ═══ */
+        .meta-list li {
+            list-style: none;
+            font-size: 0.8rem;
+            padding: 0.3rem 0;
+            border-bottom: 1px dashed var(--border);
+            display: flex;
+            gap: 0.6rem;
+        }
+        .meta-list li:last-child { border-bottom: none; }
+        .meta-list .mk {
+            font-family: var(--mono);
+            font-weight: 700;
+            color: var(--purple);
+            flex-shrink: 0;
+        }
+        .meta-list .mv {
+            color: var(--text-secondary);
+            word-break: break-word;
+        }
+
+        /* ═══ AGENT ANSWER CARD ═══ */
+        .answer-card {
+            background: linear-gradient(135deg, var(--bg) 0%, var(--bg-alt) 100%);
+            border: 1px solid var(--teal-light);
+            border-radius: var(--radius-lg);
+            padding: 1.4rem 1.5rem;
+            position: relative;
+        }
+        .answer-card .robot {
+            position: absolute;
+            top: 1.1rem;
+            right: 1.2rem;
+            font-size: 1.3rem;
+            opacity: 0.4;
+        }
+        .answer-card h4 {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--teal);
+            margin-bottom: 0.6rem;
+        }
+        .answer-text {
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+        .answer-text strong { color: var(--navy); }
+
+        .answer-facts {
+            margin-top: 0.9rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+            gap: 0.5rem;
+        }
+        .fact {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.5rem 0.7rem;
+        }
+        .fact .fk {
+            font-size: 0.64rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-light);
+        }
+        .fact .fv {
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--navy);
+            word-break: break-word;
+        }
+
+        .faq-found {
+            margin-top: 1rem;
+        }
+        .faq-found .q {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-top: 0.6rem;
+        }
+        .faq-found .a {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .gap-box {
+            margin-top: 1rem;
+            background: rgba(234,102,26,0.07);
+            border: 1px solid rgba(234,102,26,0.25);
+            border-radius: var(--radius);
+            padding: 0.8rem 1rem;
+        }
+        .gap-box .gh {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--orange);
+            margin-bottom: 0.3rem;
+        }
+        .gap-box p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+        .gap-box .gitem { font-weight: 600; color: var(--navy); }
+
+        .answer-actions { margin-top: 1rem; }
+
+        /* ═══ PUNCH LIST ═══ */
+        .punch-item {
+            display: flex;
+            gap: 0.8rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+        .punch-item:last-child { border-bottom: none; }
+        .punch-rank {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--orange);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.74rem;
+            font-weight: 800;
+            margin-top: 1px;
+        }
+        .punch-rank.done { background: var(--green); }
+        .punch-body h4 {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        .punch-body p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        .punch-impact {
+            font-size: 0.66rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.1rem 0.5rem;
+            border-radius: 10px;
+            margin-left: 0.4rem;
+            vertical-align: middle;
+        }
+        .punch-impact.high { background: var(--red-bg); color: var(--red); }
+        .punch-impact.med { background: rgba(234,102,26,0.12); color: var(--orange); }
+        .punch-impact.low { background: var(--teal-bg); color: var(--teal); }
+
+        /* ═══ CTA ═══ */
+        .results-cta {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            color: white;
+            margin-top: 2rem;
+        }
+        .results-cta h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .results-cta p {
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 1.5rem;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .results-cta .btn-primary {
+            font-size: 1rem;
+            padding: 1rem 2.5rem;
+        }
+        .results-cta .btn-note {
+            display: block;
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* ═══ FOOTER ═══ */
+        .si-footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            border-top: 1px solid var(--border);
+        }
+        .si-footer a { color: var(--teal); text-decoration: none; }
+        .si-footer a:hover { text-decoration: underline; }
+
+        .empty-val { color: var(--text-light); font-style: italic; }
+
+        /* ═══ AI ACCESS PANEL (Workstream A) ═══ */
+        .panel-icon.c6 { background: rgba(217,83,79,0.1); }
+
+        .access-banner {
+            border-radius: var(--radius);
+            padding: 1rem 1.1rem;
+            margin-bottom: 1.1rem;
+            font-size: 0.86rem;
+            line-height: 1.5;
+        }
+        .access-banner.ok {
+            background: var(--green-bg);
+            border: 1px solid rgba(92,184,92,0.35);
+            color: #2f6b2f;
+        }
+        .access-banner.blocked {
+            background: var(--red-bg);
+            border: 1px solid rgba(217,83,79,0.4);
+            color: #a13b38;
+        }
+        .access-banner .ab-title {
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+        .honesty-note {
+            font-size: 0.76rem;
+            color: var(--text-light);
+            font-style: italic;
+            margin-top: 0.9rem;
+            padding-top: 0.7rem;
+            border-top: 1px dashed var(--border);
+        }
+
+        /* schema completeness bar */
+        .schema-comp { margin-bottom: 1rem; }
+        .schema-comp .sc-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 0.6rem;
+            margin-bottom: 0.35rem;
+        }
+        .schema-comp .sc-type {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        .schema-comp .sc-count {
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+        .comp-bar-outer {
+            height: 7px;
+            background: var(--bg-section);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .comp-bar-inner {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+        .comp-bar-inner.low { background: var(--orange); }
+        .comp-bar-inner.mid { background: var(--teal); }
+        .comp-bar-inner.high { background: var(--green); }
+        .sc-missing {
+            font-size: 0.76rem;
+            color: var(--text-secondary);
+            margin-top: 0.35rem;
+        }
+        .sc-missing .mprop {
+            font-family: var(--mono);
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        /* generic compact sub-section (authority/freshness) */
+        .mini-fact-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .mini-fact {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.45rem 0.65rem;
+        }
+        .mini-fact .mfk {
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-light);
+        }
+        .mini-fact .mfv {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--navy);
+            word-break: break-word;
+        }
+
+        /* ═══ ANSWERABILITY MATRIX (Workstream B) ═══ */
+        .ans-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+            gap: 0.6rem;
+            margin: 0.4rem 0 0.4rem;
+        }
+        .ans-cell {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.6rem 0.75rem;
+            display: flex;
+            gap: 0.55rem;
+            align-items: flex-start;
+        }
+        .ans-dot {
+            flex-shrink: 0;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            margin-top: 4px;
+        }
+        .ans-dot.high { background: var(--green); }
+        .ans-dot.med { background: var(--orange); }
+        .ans-dot.none { background: var(--text-light); }
+        .ans-cell .ac-intent {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-light);
+        }
+        .ans-cell .ac-val {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--navy);
+            word-break: break-word;
+            line-height: 1.35;
+        }
+        .ans-cell .ac-val.empty { color: var(--text-light); font-weight: 400; font-style: italic; }
+
+        /* confidence badge on facts */
+        .conf-badge {
+            font-size: 0.58rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.08rem 0.4rem;
+            border-radius: 8px;
+            margin-left: 0.35rem;
+            vertical-align: middle;
+        }
+        .conf-badge.high { background: var(--green-bg); color: var(--green); }
+        .conf-badge.med { background: rgba(234,102,26,0.12); color: var(--orange); }
+        .conf-badge.none { background: var(--bg-section); color: var(--text-light); }
+        .fact .fsrc {
+            font-size: 0.62rem;
+            color: var(--text-light);
+            margin-top: 0.15rem;
+            font-style: italic;
+        }
+
+        /* query simulator */
+        .qsim {
+            margin-top: 1.1rem;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem 1.1rem;
+        }
+        .qsim-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            margin: 0.5rem 0 0.75rem;
+        }
+        .qchip {
+            font-size: 0.76rem;
+            font-weight: 600;
+            padding: 0.3rem 0.7rem;
+            border-radius: 14px;
+            background: var(--bg);
+            color: var(--navy);
+            border: 1px solid var(--teal-light);
+            cursor: pointer;
+            font-family: var(--font);
+            transition: all var(--transition);
+        }
+        .qchip:hover { background: var(--teal-bg); border-color: var(--teal); }
+        .qsim-input-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .qsim-input-row input {
+            flex: 1;
+            min-width: 180px;
+            font-family: var(--font);
+            font-size: 0.85rem;
+            color: var(--text);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.55rem 0.8rem;
+        }
+        .qsim-input-row input:focus { outline: none; border-color: var(--teal); }
+        .qsim-answer {
+            margin-top: 0.85rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--teal);
+            border-radius: var(--radius);
+            padding: 0.75rem 0.9rem;
+            font-size: 0.85rem;
+        }
+        .qsim-answer.miss { border-left-color: var(--orange); }
+        .qsim-answer .qa-q {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+        .qsim-answer .qa-src {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-top: 0.4rem;
+            font-style: italic;
+        }
+
+        /* quotable snippet card */
+        .quote-card {
+            margin-top: 1.1rem;
+            position: relative;
+            background: var(--purple-light);
+            border: 1px solid rgba(184,86,149,0.3);
+            border-radius: var(--radius);
+            padding: 1rem 1.1rem;
+        }
+        .quote-card.warn {
+            background: rgba(234,102,26,0.07);
+            border-color: rgba(234,102,26,0.25);
+        }
+        .quote-card .qc-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--purple);
+            margin-bottom: 0.45rem;
+        }
+        .quote-card.warn .qc-label { color: var(--orange); }
+        .quote-card .qc-text {
+            font-size: 0.9rem;
+            line-height: 1.55;
+            color: var(--text);
+            font-style: italic;
+        }
+        .quote-card .qc-why {
+            font-size: 0.76rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 640px) {
+            .si-header { padding: 2rem 1rem 1.75rem; }
+            .si-header h1 { font-size: 1.45rem; }
+            .wrap { padding: 1.5rem 1rem 3rem; }
+            .score-number { font-size: 3.25rem; }
+            .input-actions .btn { flex: 1; text-align: center; }
+            .privacy-note { margin-left: 0; width: 100%; justify-content: center; }
+        }
+
+        /* ═══ EXPORT / REPORT BAR ═══ */
+        .export-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem 1rem;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 0.85rem 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        .export-bar-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-light);
+        }
+        .export-bar-actions {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .export-btn {
+            font-size: 0.78rem;
+            padding: 0.55rem 1.1rem;
+        }
+        .export-btn.copied {
+            border-color: var(--green);
+            color: var(--green);
+            background: var(--green-bg);
+        }
+        @media (max-width: 540px) {
+            .export-bar { flex-direction: column; align-items: stretch; }
+            .export-bar-actions .btn { flex: 1; text-align: center; }
+        }
+
+        /* ═══ PRINT / SAVE-AS-PDF ═══ */
+        @media print {
+            :root { --shadow-sm: none; --shadow-md: none; --shadow-lg: none; }
+            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            body { font-size: 12px; color: #000; background: #fff; }
+
+            /* Hide interactive chrome that doesn't belong in a static report */
+            .input-panel,
+            .export-bar,
+            .results-cta,
+            .si-footer,
+            .ai-engines,
+            .offenders-toggle,
+            .copy-btn,
+            .qsim,
+            .answer-actions,
+            #copy-quote-btn,
+            .answer-card .answer-actions { display: none !important; }
+
+            /* Force-show results even if the .show class logic is mid-state */
+            .results { display: block !important; animation: none !important; }
+
+            /* Always expand collapsed/offender content for the printed record */
+            .readable-box { max-height: none !important; overflow: visible !important; }
+            .readable-box.collapsed { max-height: none !important; }
+            .offenders-list { display: block !important; }
+            .code-block { max-height: none !important; overflow: visible !important; white-space: pre-wrap; word-break: break-word; }
+
+            .wrap { max-width: 100%; padding: 0; }
+
+            .si-header { padding: 1.25rem 1rem; background: var(--navy) !important; }
+            .si-header h1 { font-size: 1.4rem; }
+
+            /* Hero + dark blocks: keep readable, avoid heavy ink where possible */
+            .score-hero { background: var(--navy) !important; padding: 1.4rem 1.25rem; }
+
+            /* Card hygiene: keep panels intact across page breaks */
+            .panel,
+            .answer-card,
+            .access-banner,
+            .quote-card,
+            .schema-comp,
+            .punch-item,
+            .check-line,
+            .ans-cell,
+            .stat,
+            .mini-fact,
+            .fact {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            .panel {
+                box-shadow: none;
+                border: 1px solid #999;
+                margin-bottom: 1rem;
+            }
+            .score-hero, .panel { break-inside: avoid; page-break-inside: avoid; }
+            .panel-title, .subhead, .check-body h4, .punch-body h4 { break-after: avoid; page-break-after: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="si-header">
+        <div class="si-header-badge">Free Diagnostic</div>
+        <h1>Agent Eye View: See Your Page The Way an AI Agent Does</h1>
+        <p>Paste your page's HTML source and we'll show you exactly what an AI crawler can read, the structured data it finds, and the answer it could confidently assemble about your business.</p>
+        <div class="ai-engines">
+            <span class="ai-engine"><span class="dot"></span> ChatGPT Agent</span>
+            <span class="ai-engine"><span class="dot"></span> Gemini</span>
+            <span class="ai-engine"><span class="dot"></span> Perplexity</span>
+            <span class="ai-engine"><span class="dot"></span> Claude</span>
+        </div>
+    </div>
+
+    <div class="wrap">
+
+        <!-- INPUT -->
+        <div class="input-panel">
+            <div class="input-label">
+                <h2>Paste your page's HTML source</h2>
+                <span class="note">View Source &rarr; Select All &rarr; Paste here</span>
+            </div>
+            <textarea id="html-input" spellcheck="false" placeholder="Paste the full HTML of one of your web pages here (Ctrl/Cmd+U in your browser to view source, then copy everything)…"></textarea>
+            <div class="input-actions">
+                <button class="btn btn-primary" id="btn-analyze" onclick="analyze()">Analyze</button>
+                <button class="btn btn-secondary" id="btn-sample" onclick="loadSample()">Load sample page</button>
+                <span class="privacy-note"><span class="lock">&#128274;</span> Runs 100% in your browser. Nothing is uploaded, fetched, or stored.</span>
+            </div>
+            <div class="inline-msg" id="inline-msg"></div>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="results" id="results">
+
+            <!-- SCORE HERO -->
+            <div class="score-hero">
+                <div class="score-hero-label">Agent-Readiness Score</div>
+                <div class="score-number" id="score-number">0<sup>/100</sup></div>
+                <div class="score-grade" id="score-grade">Analyzing…</div>
+                <div class="score-bar-outer"><div class="score-bar-inner" id="score-bar"></div></div>
+            </div>
+
+            <!-- EXPORT / REPORT ACTIONS -->
+            <div class="export-bar" id="export-bar">
+                <span class="export-bar-label">Take this report with you</span>
+                <div class="export-bar-actions">
+                    <button class="btn btn-secondary export-btn" id="btn-copy-report" onclick="copyReport(this)">Copy report (Markdown)</button>
+                    <button class="btn btn-secondary export-btn" id="btn-print-report" onclick="window.print()">Print / Save as PDF</button>
+                </div>
+            </div>
+
+            <!-- PANEL 0: AI ACCESS & CRAWLABILITY -->
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="panel-icon c6">&#128270;</div>
+                    <div class="panel-title">AI Access &amp; Crawlability</div>
+                </div>
+                <p class="panel-sub">Before an agent can read anything, it has to be allowed to. These are the directives and rendering risks that decide whether AI engines index, quote, and use this page at all.</p>
+                <div id="p0-body"></div>
+            </div>
+
+            <!-- PANEL 1: READABLE CONTENT -->
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="panel-icon c1">&#9998;</div>
+                    <div class="panel-title">Readable Content</div>
+                </div>
+                <p class="panel-sub">After stripping scripts, styles, and navigation boilerplate, this is the main text an agent would actually read and chunk.</p>
+                <div id="p1-body"></div>
+            </div>
+
+            <!-- PANEL 2: STRUCTURED DATA -->
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="panel-icon c2">&#123;&#125;</div>
+                    <div class="panel-title">Structured Data Found</div>
+                </div>
+                <p class="panel-sub">The machine-readable signals an agent uses to understand your business without guessing: JSON-LD, social meta tags, and your heading outline.</p>
+                <div id="p2-body"></div>
+            </div>
+
+            <!-- PANEL 3: SEMANTIC / ACCESSIBILITY -->
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="panel-icon c3">&#9678;</div>
+                    <div class="panel-title">Semantic &amp; Accessibility Outline</div>
+                </div>
+                <p class="panel-sub">The same signals Lighthouse's "agentic browsing" checks examine — the accessibility tree an AI agent relies on to navigate and act on your page.</p>
+                <div id="p3-body"></div>
+            </div>
+
+            <!-- PANEL 4: AGENT ANSWER -->
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="panel-icon c4">&#129302;</div>
+                    <div class="panel-title">The Answer an Agent Could Assemble</div>
+                </div>
+                <p class="panel-sub">A rule-based coverage map of what an agent could confidently answer about you — plus a live query simulator that maps real questions to the facts your page actually exposes. No AI call: every result is derived from your title, meta, headings, JSON-LD, and prose.</p>
+                <div id="p4-body"></div>
+            </div>
+
+            <!-- PANEL 5: PUNCH LIST -->
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="panel-icon c5">&#9745;</div>
+                    <div class="panel-title">Agent-Readiness Summary &amp; Fixes</div>
+                </div>
+                <p class="panel-sub">A prioritized punch list of the specific changes that would help an agent read, trust, and represent your page.</p>
+                <div id="p5-body"></div>
+            </div>
+
+            <!-- CTA -->
+            <div class="results-cta">
+                <h3>Want an Agent-Ready Site, Not Just a Diagnosis?</h3>
+                <p>Search Influence builds the structured data, semantic markup, and content that make AI agents read your business correctly and recommend it confidently.</p>
+                <a href="https://www.searchinfluence.com/contact/" class="btn btn-primary" target="_blank" rel="noopener">Let's Talk</a>
+                <span class="btn-note">Free consultation &middot; No commitment</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="si-footer">
+        Agent Eye View &middot; Built by <a href="https://www.searchinfluence.com/" target="_blank" rel="noopener">Search Influence</a> &middot; New Orleans, LA &middot; Runs entirely in your browser
+    </div>
+
+    <script>
+        /* ════════════════════════════════════════════
+           UTILITIES
+           ════════════════════════════════════════════ */
+        function esc(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        function collapseWs(s) { return String(s || '').replace(/\s+/g, ' ').trim(); }
+        function truncate(s, n) { s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+
+        function copyText(btn, text) {
+            const done = () => {
+                const orig = btn.textContent;
+                btn.textContent = 'Copied';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1600);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+            } else { fallbackCopy(text, done); }
+        }
+        function fallbackCopy(text, done) {
+            const ta = document.createElement('textarea');
+            ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); done(); } catch (e) {}
+            document.body.removeChild(ta);
+        }
+        function toggleEl(el) { el.classList.toggle('show'); }
+
+        // Tags that hold no human-readable content for an agent.
+        const NOISE_TAGS = new Set(['SCRIPT','STYLE','NOSCRIPT','TEMPLATE','SVG','IFRAME','CANVAS']);
+        // Structural/boilerplate landmarks stripped to isolate main reading text.
+        const BOILERPLATE_TAGS = new Set(['NAV','HEADER','FOOTER','ASIDE']);
+
+        /* ════════════════════════════════════════════
+           CORE ANALYSIS
+           ════════════════════════════════════════════ */
+        function analyzeDoc(rawHtml) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(rawHtml, 'text/html');
+
+            const r = {};
+
+            // --- Title & meta ---
+            const titleEl = doc.querySelector('title');
+            r.title = titleEl ? collapseWs(titleEl.textContent) : '';
+            const metaDesc = doc.querySelector('meta[name="description" i]');
+            r.metaDescription = metaDesc ? collapseWs(metaDesc.getAttribute('content') || '') : '';
+            r.langAttr = doc.documentElement ? (doc.documentElement.getAttribute('lang') || '') : '';
+
+            // --- Readable text extraction ---
+            // Clone body, strip noise + boilerplate, read remaining text.
+            const bodySrc = doc.body || doc.documentElement;
+            const clone = bodySrc ? bodySrc.cloneNode(true) : null;
+            if (clone) {
+                clone.querySelectorAll('script,style,noscript,template,svg,iframe,canvas,nav,header,footer,aside')
+                    .forEach(n => n.remove());
+            }
+            let readable = clone ? collapseWs(clone.textContent || '') : '';
+            // Fallback: if stripping boilerplate nuked nearly everything, use full body text.
+            if (readable.split(' ').filter(Boolean).length < 15 && bodySrc) {
+                const c2 = bodySrc.cloneNode(true);
+                c2.querySelectorAll('script,style,noscript,template,svg,iframe,canvas').forEach(n => n.remove());
+                const alt = collapseWs(c2.textContent || '');
+                if (alt.split(' ').filter(Boolean).length > readable.split(' ').filter(Boolean).length) readable = alt;
+            }
+            r.readable = readable;
+            r.wordCount = readable ? readable.split(/\s+/).filter(Boolean).length : 0;
+            r.depth = r.wordCount < 120 ? 'thin' : (r.wordCount < 400 ? 'adequate' : 'rich');
+
+            // Lead paragraphs (for the assembled answer)
+            r.paragraphs = Array.from(doc.querySelectorAll('main p, article p, p'))
+                .map(p => collapseWs(p.textContent))
+                .filter(t => t.split(' ').length >= 6)
+                .slice(0, 6);
+
+            // --- JSON-LD ---
+            r.jsonld = [];
+            r.jsonldTypes = [];
+            r.jsonldRaw = [];
+            doc.querySelectorAll('script[type="application/ld+json" i]').forEach(s => {
+                const txt = (s.textContent || '').trim();
+                if (!txt) return;
+                r.jsonldRaw.push(txt);
+                try {
+                    const parsed = JSON.parse(txt);
+                    const nodes = Array.isArray(parsed) ? parsed
+                        : (parsed['@graph'] && Array.isArray(parsed['@graph']) ? parsed['@graph'] : [parsed]);
+                    nodes.forEach(n => {
+                        if (n && typeof n === 'object') {
+                            r.jsonld.push(n);
+                            let t = n['@type'];
+                            if (Array.isArray(t)) t.forEach(x => r.jsonldTypes.push(String(x)));
+                            else if (t) r.jsonldTypes.push(String(t));
+                        }
+                    });
+                } catch (e) {
+                    r.jsonldTypes.push('(unparseable JSON-LD)');
+                }
+            });
+            r.jsonldTypes = Array.from(new Set(r.jsonldTypes));
+
+            // --- Open Graph / Twitter meta ---
+            r.og = [];
+            r.twitter = [];
+            doc.querySelectorAll('meta[property^="og:" i]').forEach(m => {
+                r.og.push({ k: m.getAttribute('property'), v: collapseWs(m.getAttribute('content') || '') });
+            });
+            doc.querySelectorAll('meta[name^="twitter:" i]').forEach(m => {
+                r.twitter.push({ k: m.getAttribute('name'), v: collapseWs(m.getAttribute('content') || '') });
+            });
+
+            // --- Heading outline ---
+            r.headings = Array.from(doc.querySelectorAll('h1,h2,h3,h4,h5,h6')).map(h => ({
+                level: parseInt(h.tagName.substring(1)),
+                text: collapseWs(h.textContent) || '(empty heading)'
+            }));
+            r.h1Count = r.headings.filter(h => h.level === 1).length;
+            // skipped levels detection
+            r.skips = [];
+            let prev = 0;
+            r.headings.forEach(h => {
+                if (prev && h.level > prev + 1) r.skips.push({ from: prev, to: h.level, text: h.text });
+                prev = h.level;
+            });
+
+            // --- Landmarks ---
+            r.landmarks = {
+                header: doc.querySelector('header, [role="banner" i]') != null,
+                nav: doc.querySelector('nav, [role="navigation" i]') != null,
+                main: doc.querySelector('main, [role="main" i]') != null,
+                footer: doc.querySelector('footer, [role="contentinfo" i]') != null,
+                aside: doc.querySelector('aside, [role="complementary" i]') != null
+            };
+
+            // --- Images / alt coverage ---
+            const imgs = Array.from(doc.querySelectorAll('img'));
+            r.imgTotal = imgs.length;
+            r.imgMissingAlt = imgs.filter(i => {
+                const a = i.getAttribute('alt');
+                return a == null || a.trim() === '';
+            }).map(i => collapseWs(i.getAttribute('src') || i.getAttribute('data-src') || '(inline image, no src)'));
+            r.imgWithAlt = r.imgTotal - r.imgMissingAlt.length;
+
+            // --- Link quality ---
+            const VAGUE = ['click here','read more','learn more','here','more','this','link','click','read','details','continue','go'];
+            const links = Array.from(doc.querySelectorAll('a[href]'));
+            r.linkTotal = links.length;
+            r.emptyLinks = [];
+            r.vagueLinks = [];
+            links.forEach(a => {
+                const txt = collapseWs(a.textContent);
+                const aria = collapseWs(a.getAttribute('aria-label') || '');
+                const hasImg = a.querySelector('img[alt]') && collapseWs(a.querySelector('img[alt]').getAttribute('alt'));
+                const label = txt || aria || (hasImg || '');
+                const href = a.getAttribute('href') || '';
+                if (!label) {
+                    r.emptyLinks.push(href || '(no href)');
+                } else if (VAGUE.includes(label.toLowerCase())) {
+                    r.vagueLinks.push('"' + truncate(label, 30) + '" → ' + truncate(href, 40));
+                }
+            });
+
+            // --- Form labels ---
+            const fields = Array.from(doc.querySelectorAll('input:not([type="hidden" i]):not([type="submit" i]):not([type="button" i]), select, textarea'));
+            r.fieldTotal = fields.length;
+            r.unlabeled = [];
+            fields.forEach(f => {
+                const id = f.getAttribute('id');
+                let labeled = false;
+                if (id && doc.querySelector('label[for="' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]')) labeled = true;
+                if (!labeled && f.closest('label')) labeled = true;
+                if (!labeled && (f.getAttribute('aria-label') || f.getAttribute('aria-labelledby') || f.getAttribute('title'))) labeled = true;
+                if (!labeled) {
+                    const desc = (f.tagName.toLowerCase()) + (f.getAttribute('type') ? '[type=' + f.getAttribute('type') + ']' : '')
+                        + (f.getAttribute('name') ? ' name="' + f.getAttribute('name') + '"' : '');
+                    r.unlabeled.push(desc);
+                }
+            });
+            r.labeledFields = r.fieldTotal - r.unlabeled.length;
+
+            /* ════════════════════════════════════════════
+               WORKSTREAM A — AI-SEO CHECK BUNDLES
+               ════════════════════════════════════════════ */
+
+            // === 1) AI & SNIPPET DIRECTIVES ===
+            // Parse robots / googlebot / AI-bot robots metas. Tokenize content case-insensitively.
+            r.directives = {
+                noindex: false, nofollow: false, nosnippet: false, noarchive: false,
+                maxSnippet: null, noai: false, noimageai: false,
+                rawMetas: [], dataNosnippetCount: 0, blocked: false, blockReasons: []
+            };
+            const AI_BOT_NAMES = /^(robots|googlebot|googlebot-news|bingbot|google-extended|gptbot|chatgpt-user|oai-searchbot|claudebot|claude-web|anthropic-ai|perplexitybot|applebot|applebot-extended|ccbot|bytespider|amazonbot|meta-externalagent|facebookbot)$/i;
+            doc.querySelectorAll('meta[name]').forEach(m => {
+                const nm = (m.getAttribute('name') || '').trim();
+                if (!AI_BOT_NAMES.test(nm)) return;
+                const content = (m.getAttribute('content') || '').trim();
+                if (!content) return;
+                r.directives.rawMetas.push({ name: nm, content: content });
+                content.split(/[,\s]+/).filter(Boolean).forEach(tokRaw => {
+                    const tok = tokRaw.toLowerCase();
+                    if (tok === 'noindex') r.directives.noindex = true;
+                    else if (tok === 'nofollow') r.directives.nofollow = true;
+                    else if (tok === 'nosnippet') r.directives.nosnippet = true;
+                    else if (tok === 'noarchive') r.directives.noarchive = true;
+                    else if (tok === 'noai') r.directives.noai = true;
+                    else if (tok === 'noimageai') r.directives.noimageai = true;
+                    else if (/^max-snippet:/.test(tok)) {
+                        const v = parseInt(tok.split(':')[1], 10);
+                        if (!isNaN(v)) r.directives.maxSnippet = v;
+                    }
+                });
+            });
+            r.directives.dataNosnippetCount = doc.querySelectorAll('[data-nosnippet]').length;
+            // Crawl/usage GATE — page is telling AI engines not to index/use content.
+            if (r.directives.noindex) r.directives.blockReasons.push('noindex');
+            if (r.directives.nosnippet) r.directives.blockReasons.push('nosnippet');
+            if (r.directives.maxSnippet === 0) r.directives.blockReasons.push('max-snippet:0');
+            if (r.directives.noai) r.directives.blockReasons.push('noai');
+            r.directives.blocked = r.directives.blockReasons.length > 0;
+
+            // === 2) CONTENT-VISIBILITY / JS-DEPENDENCY RISK ===
+            const allScripts = Array.from(doc.querySelectorAll('script'));
+            r.scriptTotal = allScripts.length;
+            r.scriptExternal = allScripts.filter(s => s.getAttribute('src')).length;
+            // text-to-element ratio of body
+            const bodyEl = doc.body;
+            const elementCount = bodyEl ? bodyEl.querySelectorAll('*').length : 0;
+            r.elementCount = elementCount;
+            r.textToElementRatio = elementCount > 0 ? r.wordCount / elementCount : r.wordCount;
+            // Heuristic risk flag
+            let jsRisk = 'none';
+            if (r.wordCount < 150) {
+                if (r.scriptTotal >= 3 || r.textToElementRatio < 0.5) jsRisk = 'likely';
+                else if (r.scriptTotal >= 1) jsRisk = 'possible';
+            } else if (r.wordCount < 250 && r.scriptTotal >= 5 && r.textToElementRatio < 0.8) {
+                jsRisk = 'possible';
+            }
+            r.jsRisk = jsRisk;
+
+            // === 3) EXTRACTABILITY — structure inventory ===
+            r.lists = doc.querySelectorAll('ul, ol').length;
+            r.tables = doc.querySelectorAll('table').length;
+            r.dls = doc.querySelectorAll('dl').length;
+            // answer-first: a substantive <p> immediately following a heading
+            const QSTART = /^(who|what|where|when|why|how|do|does|did|can|could|is|are|will|should|which)\b/i;
+            r.answerFirstCount = 0;
+            Array.from(doc.querySelectorAll('h1,h2,h3,h4,h5,h6')).forEach(h => {
+                let sib = h.nextElementSibling;
+                if (sib && sib.tagName === 'P') {
+                    const t = collapseWs(sib.textContent);
+                    if (t.split(/\s+/).filter(Boolean).length >= 12) r.answerFirstCount++;
+                }
+            });
+            // question-style headings
+            r.questionHeadings = r.headings.filter(h => {
+                const t = h.text;
+                return /\?\s*$/.test(t) || QSTART.test(t);
+            }).map(h => h.text);
+            r.hasFaqSchema = r.jsonldTypes.some(t => /FAQPage/i.test(t));
+            r.faqLike = r.hasFaqSchema || r.questionHeadings.length >= 2;
+            r.extractableScore = (r.lists > 0 ? 1 : 0) + (r.tables > 0 ? 1 : 0)
+                + (r.answerFirstCount > 0 ? 1 : 0) + (r.faqLike ? 1 : 0) + (r.questionHeadings.length > 0 ? 1 : 0);
+
+            // === 3b) SCHEMA COMPLETENESS ===
+            const RECOMMENDED = {
+                LocalBusiness: ['name','description','url','telephone','address','openingHoursSpecification','geo','image','priceRange','sameAs'],
+                Organization: ['name','description','url','telephone','address','logo','image','sameAs','contactPoint'],
+                Restaurant: ['name','description','url','telephone','address','openingHoursSpecification','geo','image','priceRange','servesCuisine','menu'],
+                Product: ['name','description','image','brand','offers','aggregateRating','sku'],
+                Service: ['name','description','provider','areaServed','offers'],
+                Article: ['headline','description','author','datePublished','dateModified','image','publisher'],
+                BlogPosting: ['headline','description','author','datePublished','dateModified','image','publisher'],
+                Event: ['name','description','startDate','location','offers','image'],
+                Person: ['name','description','url','image','sameAs','jobTitle'],
+                FAQPage: ['mainEntity'],
+                WebPage: ['name','description','url'],
+                WebSite: ['name','url']
+            };
+            const BIZ_TYPE = /Organization|LocalBusiness|Store|Restaurant|Corporation|Hotel|Dentist|Physician|Service|Product|Article|BlogPosting|Event|Person/i;
+            r.schemaCompleteness = [];
+            const seenTypes = new Set();
+            r.jsonld.forEach(node => {
+                const t = node['@type'];
+                const types = Array.isArray(t) ? t.map(String) : (t ? [String(t)] : []);
+                types.forEach(typeName => {
+                    if (seenTypes.has(typeName)) return;
+                    // pick recommended set: exact match, else closest known business type, else WebPage default
+                    let rec = RECOMMENDED[typeName];
+                    if (!rec) {
+                        // LocalBusiness subtypes (Florist, Dentist, etc.) → LocalBusiness set
+                        if (/Business|Store|Shop|Florist|Dentist|Physician|Hotel|Restaurant|Salon|Agency/i.test(typeName)) rec = RECOMMENDED.LocalBusiness;
+                    }
+                    if (!rec) return;
+                    seenTypes.add(typeName);
+                    const present = [], missing = [];
+                    rec.forEach(prop => {
+                        let has = node[prop] != null && !(typeof node[prop] === 'string' && node[prop].trim() === '');
+                        // alias checks
+                        if (!has && prop === 'openingHoursSpecification' && node.openingHours != null) has = true;
+                        if (!has && prop === 'image' && node.logo != null) has = true;
+                        if (has) present.push(prop); else missing.push(prop);
+                    });
+                    r.schemaCompleteness.push({
+                        type: typeName, recommended: rec.length,
+                        present: present.length, presentProps: present, missingProps: missing,
+                        isBiz: BIZ_TYPE.test(typeName)
+                    });
+                });
+            });
+
+            // === 4) AUTHORITY & FRESHNESS (E-E-A-T) ===
+            // Canonical
+            const canonEl = doc.querySelector('link[rel="canonical" i]');
+            r.canonical = canonEl ? collapseWs(canonEl.getAttribute('href') || '') : '';
+            r.hasCanonical = !!canonEl;
+            // sameAs from JSON-LD
+            r.sameAs = [];
+            r.jsonld.forEach(node => {
+                if (node.sameAs) {
+                    const sa = Array.isArray(node.sameAs) ? node.sameAs : [node.sameAs];
+                    sa.forEach(u => { if (u) r.sameAs.push(collapseWs(String(u))); });
+                }
+            });
+            r.sameAs = Array.from(new Set(r.sameAs));
+            // Author
+            r.author = '';
+            r.authorSource = '';
+            r.jsonld.forEach(node => {
+                if (!r.author && node.author) {
+                    const a = node.author;
+                    if (typeof a === 'string') r.author = collapseWs(a);
+                    else if (a && a.name) r.author = collapseWs(a.name);
+                    if (r.author) r.authorSource = 'JSON-LD';
+                }
+            });
+            if (!r.author) {
+                const ma = doc.querySelector('meta[name="author" i]');
+                if (ma && ma.getAttribute('content')) { r.author = collapseWs(ma.getAttribute('content')); r.authorSource = 'meta'; }
+            }
+            if (!r.author) {
+                const ra = doc.querySelector('[rel="author" i]');
+                if (ra) { r.author = collapseWs(ra.textContent) || collapseWs(ra.getAttribute('href') || ''); if (r.author) r.authorSource = 'rel=author'; }
+            }
+            // Freshness — dates from JSON-LD + visible <time> / "last updated" cues
+            r.datePublished = '';
+            r.dateModified = '';
+            r.jsonld.forEach(node => {
+                if (!r.datePublished && node.datePublished) r.datePublished = collapseWs(String(node.datePublished));
+                if (!r.dateModified && node.dateModified) r.dateModified = collapseWs(String(node.dateModified));
+            });
+            r.timeEls = Array.from(doc.querySelectorAll('time')).map(t =>
+                collapseWs(t.getAttribute('datetime') || t.textContent || '')).filter(Boolean);
+            r.hasFreshness = !!(r.datePublished || r.dateModified || r.timeEls.length ||
+                /last updated|updated on|last modified|published on/i.test(r.readable));
+
+            return r;
+        }
+
+        /* ════════════════════════════════════════════
+           SCORING
+           ════════════════════════════════════════════ */
+        function scoreDoc(r) {
+            let s = 0;
+            const reasons = [];
+
+            // Title (8)
+            if (r.title) s += 8; else reasons.push('no-title');
+            // Meta description (6)
+            if (r.metaDescription) s += 6; else reasons.push('no-meta');
+            // Lang (3)
+            if (r.langAttr) s += 3; else reasons.push('no-lang');
+
+            // Single clean H1 (9)
+            if (r.h1Count === 1) s += 9;
+            else if (r.h1Count === 0) { reasons.push('no-h1'); }
+            else { s += 3; reasons.push('multi-h1'); }
+            // No skipped heading levels (4)
+            if (r.skips.length === 0 && r.headings.length > 0) s += 4;
+            else if (r.skips.length) reasons.push('skips');
+
+            // JSON-LD presence (11)
+            if (r.jsonld.length) s += 11; else reasons.push('no-jsonld');
+            // OG tags (4)
+            if (r.og.length) s += 4; else reasons.push('no-og');
+
+            // Content depth (9)
+            if (r.depth === 'rich') s += 9;
+            else if (r.depth === 'adequate') s += 6;
+            else { s += 2; reasons.push('thin'); }
+
+            // Landmarks: main present (6) + at least 3 landmarks (3)
+            const lmCount = Object.values(r.landmarks).filter(Boolean).length;
+            if (r.landmarks.main) s += 6; else reasons.push('no-main');
+            if (lmCount >= 3) s += 3;
+
+            // Alt coverage (6)
+            if (r.imgTotal === 0) s += 6;
+            else {
+                const cov = r.imgWithAlt / r.imgTotal;
+                s += Math.round(cov * 6);
+                if (cov < 1) reasons.push('alt');
+            }
+
+            // Link quality (4)
+            if (r.linkTotal === 0) s += 2;
+            else if (r.emptyLinks.length === 0 && r.vagueLinks.length === 0) s += 4;
+            else { s += 2; reasons.push('links'); }
+
+            // Form labels (2)
+            if (r.fieldTotal === 0) s += 2;
+            else if (r.unlabeled.length === 0) s += 2;
+            else reasons.push('labels');
+
+            /* ── NEW AI-SEO weights ── */
+
+            // Clean AI/snippet directives (6) — page is not blocking usage
+            if (!r.directives.blocked) {
+                s += 6;
+                // small bonus if no restrictive directives at all
+                if (!r.directives.nofollow && !r.directives.noarchive && r.directives.maxSnippet == null && !r.directives.noimageai) s += 1;
+            } else reasons.push('blocked');
+
+            // Low JS-dependency risk (5)
+            if (r.jsRisk === 'none') s += 5;
+            else if (r.jsRisk === 'possible') { s += 2; reasons.push('js-risk'); }
+            else reasons.push('js-risk');
+
+            // Extractable structure (6) — lists/tables/answer-first/FAQ/Q-headings (0..5 signals)
+            s += Math.min(6, r.extractableScore * 1.5);
+            if (r.extractableScore < 2) reasons.push('thin-structure');
+
+            // Schema completeness (8, proportional across business types)
+            const bizSchemas = r.schemaCompleteness.filter(c => c.isBiz);
+            if (bizSchemas.length) {
+                const ratio = bizSchemas.reduce((acc, c) => acc + (c.present / c.recommended), 0) / bizSchemas.length;
+                s += Math.round(ratio * 8);
+                if (ratio < 0.7) reasons.push('schema-incomplete');
+            } else if (r.schemaCompleteness.length) {
+                // non-biz schema present — partial credit
+                const ratio = r.schemaCompleteness.reduce((acc, c) => acc + (c.present / c.recommended), 0) / r.schemaCompleteness.length;
+                s += Math.round(ratio * 4);
+            }
+
+            // Freshness / authority (5)
+            if (r.hasCanonical) s += 1; else reasons.push('no-canonical');
+            if (r.sameAs.length) s += 1.5; else reasons.push('no-sameas');
+            if (r.author) s += 1; else reasons.push('no-author');
+            if (r.hasFreshness) s += 1.5; else reasons.push('no-freshness');
+
+            r.score = Math.max(0, Math.min(100, Math.round(s)));
+
+            // OVERRIDE: page blocks AI usage → hard cap.
+            if (r.directives.blocked) {
+                r.scoreCapped = true;
+                r.score = Math.min(r.score, 25);
+            } else {
+                r.scoreCapped = false;
+            }
+
+            r.reasons = reasons;
+            return r.score;
+        }
+
+        /* ════════════════════════════════════════════
+           RENDER
+           ════════════════════════════════════════════ */
+        let LAST = null;
+
+        function statusLine(state, title, detail, offenders, offLabel) {
+            const sym = state === 'pass' ? '✓' : (state === 'warn' ? '!' : '✕');
+            let off = '';
+            if (offenders && offenders.length) {
+                const id = 'off-' + Math.random().toString(36).slice(2, 9);
+                const items = offenders.map(o => '<li>' + esc(o) + '</li>').join('');
+                off = '<div class="offenders">' +
+                    '<button class="offenders-toggle" onclick="toggleEl(document.getElementById(\'' + id + '\'))">' +
+                    esc(offLabel || ('Show ' + offenders.length)) + '</button>' +
+                    '<ul class="offenders-list" id="' + id + '">' + items + '</ul></div>';
+            }
+            return '<div class="check-line">' +
+                '<div class="check-badge ' + state + '">' + sym + '</div>' +
+                '<div class="check-body"><h4>' + esc(title) + '</h4><p>' + detail + '</p>' + off + '</div></div>';
+        }
+
+        function render(r) {
+            LAST = r;
+            document.getElementById('results').classList.add('show');
+
+            renderHero(r);
+            renderAccess(r);
+            renderReadable(r);
+            renderStructured(r);
+            renderSemantic(r);
+            renderAnswer(r);
+            renderPunchList(r);
+
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        /* Grade text + band — shared by the hero and the Markdown report so they always match. */
+        function gradeFor(r) {
+            const s = r.score;
+            if (r.scoreCapped) {
+                return { text: '⚠ This page tells AI engines NOT to use its content (' + r.directives.blockReasons.join(', ') + ') — score capped regardless of other signals.', cls: 'low' };
+            }
+            if (s >= 80) return { text: 'Agent-ready — an agent can read and represent this page well', cls: 'high' };
+            if (s >= 55) return { text: 'Mostly readable — a few signals are missing or ambiguous', cls: 'mid' };
+            if (s >= 33) return { text: 'Partly readable — agents will miss or guess at key facts', cls: 'mid' };
+            return { text: 'Hard to read — agents struggle to extract reliable facts here', cls: 'low' };
+        }
+
+        function renderHero(r) {
+            const num = document.getElementById('score-number');
+            const bar = document.getElementById('score-bar');
+            const grade = document.getElementById('score-grade');
+            const s = r.score;
+            const gr = gradeFor(r);
+            const g = gr.text, cls = gr.cls;
+            grade.textContent = g;
+            bar.className = 'score-bar-inner ' + cls;
+
+            // animate number
+            const start = performance.now(), dur = 1100;
+            (function step(t) {
+                const p = Math.min((t - start) / dur, 1);
+                const eased = 1 - Math.pow(1 - p, 3);
+                num.innerHTML = Math.round(s * eased) + '<sup>/100</sup>';
+                if (p < 1) requestAnimationFrame(step);
+            })(start);
+            setTimeout(() => { bar.style.width = s + '%'; }, 120);
+        }
+
+        function renderAccess(r) {
+            const el = document.getElementById('p0-body');
+            const d = r.directives;
+            let html = '';
+
+            // Prominent access banner
+            if (d.blocked) {
+                html += '<div class="access-banner blocked">' +
+                    '<div class="ab-title">⛔ AI usage blocked</div>' +
+                    'This page carries <strong>' + esc(d.blockReasons.join(', ')) + '</strong>. It is explicitly telling search and AI engines not to index or quote its content. Even with perfect markup, agents will omit or refuse to surface this page.</div>';
+            } else {
+                html += '<div class="access-banner ok">' +
+                    '<div class="ab-title">✓ No usage-blocking directives</div>' +
+                    'Nothing on this page tells AI or search engines to skip indexing or quoting it. Engines are free to read and use the content below.</div>';
+            }
+
+            // Directives check line
+            const restrictive = [];
+            if (d.noindex) restrictive.push('noindex');
+            if (d.nofollow) restrictive.push('nofollow');
+            if (d.nosnippet) restrictive.push('nosnippet');
+            if (d.noarchive) restrictive.push('noarchive');
+            if (d.maxSnippet != null) restrictive.push('max-snippet:' + d.maxSnippet);
+            if (d.noai) restrictive.push('noai');
+            if (d.noimageai) restrictive.push('noimageai');
+            if (d.dataNosnippetCount) restrictive.push(d.dataNosnippetCount + '× data-nosnippet');
+
+            let dirState, dirDetail;
+            if (d.blocked) {
+                dirState = 'fail';
+                dirDetail = 'Found usage-blocking directives: <strong>' + esc(restrictive.join(', ')) + '</strong>. Remove these to let AI engines index and quote the page.';
+            } else if (restrictive.length) {
+                dirState = 'warn';
+                dirDetail = 'Found restrictive (but not fully blocking) directives: <strong>' + esc(restrictive.join(', ')) + '</strong>. These limit how engines can use the page.';
+            } else {
+                dirState = 'pass';
+                dirDetail = 'No robots / AI-bot meta directives restrict indexing or snippets. ' +
+                    (d.rawMetas.length ? 'Robots metas present and permissive.' : 'No robots meta tags present (default = indexable).');
+            }
+            html += statusLine(dirState, 'AI &amp; snippet directives', dirDetail,
+                d.rawMetas.length ? d.rawMetas.map(m => m.name + ': ' + m.content) : null,
+                'Show ' + d.rawMetas.length + ' robots meta' + (d.rawMetas.length === 1 ? '' : 's'));
+
+            // JS-dependency / content-visibility risk
+            let jsState, jsTitle = 'Content-visibility (JS-dependency) risk', jsDetail;
+            if (r.jsRisk === 'likely') {
+                jsState = 'fail';
+                jsDetail = 'Only ' + r.wordCount + ' readable words alongside ' + r.scriptTotal + ' script tag' + (r.scriptTotal === 1 ? '' : 's') +
+                    ' and a very low text-to-element ratio. The visible content is likely rendered by JavaScript — and most AI crawlers do NOT execute JS, so they may see almost nothing.';
+            } else if (r.jsRisk === 'possible') {
+                jsState = 'warn';
+                jsDetail = r.wordCount + ' readable words with ' + r.scriptTotal + ' script tag' + (r.scriptTotal === 1 ? '' : 's') +
+                    '. Some content may be JS-rendered and invisible to non-rendering AI crawlers. Verify the key facts exist in the raw HTML.';
+            } else {
+                jsState = 'pass';
+                jsDetail = 'Substantive text is present directly in the HTML (' + r.wordCount + ' readable words, ' + r.scriptTotal + ' script tag' + (r.scriptTotal === 1 ? '' : 's') +
+                    '). Agents that do not execute JavaScript can still read the content.';
+            }
+            html += statusLine(jsState, jsTitle, jsDetail, null);
+
+            // Canonical
+            html += statusLine(r.hasCanonical ? 'pass' : 'warn', 'Canonical URL',
+                r.hasCanonical
+                    ? 'Declared: <span style="font-family:var(--mono);font-size:0.78rem">' + esc(truncate(r.canonical, 80)) + '</span> — tells engines which URL is authoritative.'
+                    : 'No &lt;link rel="canonical"&gt;. Engines may pick the wrong URL or split signals across duplicates.',
+                null);
+
+            // Honesty note about robots.txt
+            html += '<div class="honesty-note">Note: bot blocking at the <strong>robots.txt</strong> level (e.g. disallowing GPTBot, ClaudeBot, or PerplexityBot) lives in a separate file this tool can\'t see from pasted HTML. A clean result here doesn\'t guarantee robots.txt isn\'t blocking AI crawlers site-wide.</div>';
+
+            el.innerHTML = html;
+        }
+
+        function renderReadable(r) {
+            const el = document.getElementById('p1-body');
+            let html = '';
+
+            // headline understanding
+            html += '<div class="agent-headline">' +
+                '<div class="lbl">Agent\'s headline understanding (from &lt;title&gt;)</div>' +
+                '<div class="title-line">' + (r.title ? esc(r.title) : '<span class="missing">No &lt;title&gt; — the agent has no headline for this page</span>') + '</div>' +
+                '<div class="desc-line">' + (r.metaDescription ? esc(r.metaDescription) : '<span class="missing">No meta description — the agent has no summary to quote</span>') + '</div>' +
+                '</div>';
+
+            const depthNote = r.depth === 'thin'
+                ? 'Thin — there may not be enough text for an agent to summarize confidently.'
+                : (r.depth === 'adequate'
+                    ? 'Adequate — enough text to extract a basic understanding.'
+                    : 'Rich — plenty of substance for an agent to summarize and cite.');
+
+            html += '<div class="stat-row">' +
+                '<div class="stat"><div class="val">' + r.wordCount.toLocaleString() + '</div><div class="lbl">Readable words</div></div>' +
+                '<div class="stat"><div class="val"><span class="depth-pill ' + r.depth + '">' + r.depth + '</span></div><div class="lbl">Content depth</div></div>' +
+                '<div class="stat"><div class="val">' + r.paragraphs.length + '</div><div class="lbl">Substantive &lt;p&gt;</div></div>' +
+                '</div>';
+            html += '<div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.75rem">' + esc(depthNote) + '</div>';
+
+            const distilled = r.readable || '';
+            if (distilled) {
+                const boxId = 'readbox';
+                html += '<div class="readable-box collapsed" id="' + boxId + '">' + esc(distilled) + '</div>';
+                html += '<div style="margin-top:0.5rem;display:flex;gap:0.75rem;flex-wrap:wrap">' +
+                    '<button class="offenders-toggle" onclick="(function(b){b.classList.toggle(\'collapsed\');this.textContent=b.classList.contains(\'collapsed\')?\'Show full extracted text\':\'Collapse text\';}).call(this, document.getElementById(\'' + boxId + '\'))">Show full extracted text</button>' +
+                    '</div>';
+            } else {
+                html += '<div class="readable-box">An agent would find no meaningful body text on this page after stripping scripts and boilerplate. Content rendered only by JavaScript will not be visible to most crawlers.</div>';
+            }
+
+            // ── Extractable structure inventory ──
+            html += '<div class="subhead">Extractable structure</div>';
+            html += '<div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.6rem">Engines preferentially lift lists, tables, Q&amp;A, and answer-first passages — raw word count alone isn\'t what gets quoted.</div>';
+            html += '<div class="stat-row">' +
+                '<div class="stat"><div class="val">' + r.lists + '</div><div class="lbl">Lists (ul/ol)</div></div>' +
+                '<div class="stat"><div class="val">' + r.tables + '</div><div class="lbl">Tables</div></div>' +
+                '<div class="stat"><div class="val">' + r.answerFirstCount + '</div><div class="lbl">Answer-first &lt;p&gt;</div></div>' +
+                '<div class="stat"><div class="val">' + r.questionHeadings.length + '</div><div class="lbl">Question headings</div></div>' +
+                '</div>';
+            const exNotes = [];
+            if (r.faqLike) exNotes.push(r.hasFaqSchema ? 'FAQ schema present — directly extractable Q&A.' : 'Question-style headings form an FAQ-like block agents can lift.');
+            if (r.answerFirstCount > 0) exNotes.push(r.answerFirstCount + ' heading' + (r.answerFirstCount === 1 ? '' : 's') + ' followed immediately by a substantive paragraph (answer-first pattern engines love).');
+            if (r.lists > 0 || r.tables > 0) exNotes.push('Lists/tables present — clean structured chunks for extraction.');
+            if (!exNotes.length) exNotes.push('Little extractable structure: no lists, tables, FAQ, or answer-first passages. Agents must parse loose prose, which is harder to quote reliably.');
+            html += '<ul style="padding-left:1.1rem;font-size:0.81rem;color:var(--text-secondary)">' +
+                exNotes.map(n => '<li style="margin-bottom:0.2rem">' + esc(n) + '</li>').join('') + '</ul>';
+
+            el.innerHTML = html;
+        }
+
+        function renderStructured(r) {
+            const el = document.getElementById('p2-body');
+            let html = '';
+
+            // JSON-LD
+            html += '<div class="subhead">JSON-LD structured data</div>';
+            if (r.jsonldTypes.length) {
+                html += '<div class="chip-row">' + r.jsonldTypes.map(t => '<span class="chip">' + esc(t) + '</span>').join('') + '</div>';
+                const joined = r.jsonldRaw.join('\n\n');
+                const cid = 'jsonld-code';
+                html += '<div class="code-wrap">' +
+                    '<button class="copy-btn" onclick="copyText(this, document.getElementById(\'' + cid + '\').textContent)">Copy</button>' +
+                    '<div class="code-block" id="' + cid + '">' + esc(joined) + '</div></div>';
+            } else {
+                html += '<div class="chip-row"><span class="chip muted">None found</span></div>' +
+                    '<p style="font-size:0.8rem;color:var(--orange)">No JSON-LD found. Agents have no machine-readable description of your business, services, location, or hours — they must guess from prose.</p>';
+            }
+
+            // Schema completeness
+            if (r.schemaCompleteness.length) {
+                html += '<div class="subhead">Schema completeness</div>';
+                html += '<div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.7rem">Detecting a type isn\'t enough — agents need the actual properties. Here\'s how complete each detected type is against its recommended set.</div>';
+                r.schemaCompleteness.forEach(c => {
+                    const pct = Math.round((c.present / c.recommended) * 100);
+                    const cls = pct >= 80 ? 'high' : (pct >= 50 ? 'mid' : 'low');
+                    html += '<div class="schema-comp">' +
+                        '<div class="sc-head"><span class="sc-type">' + esc(c.type) + '</span>' +
+                        '<span class="sc-count">' + c.present + ' of ' + c.recommended + ' recommended props</span></div>' +
+                        '<div class="comp-bar-outer"><div class="comp-bar-inner ' + cls + '" style="width:' + pct + '%"></div></div>';
+                    if (c.missingProps.length) {
+                        html += '<div class="sc-missing">Missing: ' +
+                            c.missingProps.map(p => '<span class="mprop">' + esc(p) + '</span>').join(', ') + '</div>';
+                    } else {
+                        html += '<div class="sc-missing" style="color:var(--green)">All recommended properties present.</div>';
+                    }
+                    html += '</div>';
+                });
+            }
+
+            // OG / Twitter
+            html += '<div class="subhead">Social / sharing meta tags</div>';
+            const social = r.og.concat(r.twitter);
+            if (social.length) {
+                html += '<ul class="meta-list">' + social.map(m =>
+                    '<li><span class="mk">' + esc(m.k) + '</span><span class="mv">' + (m.v ? esc(truncate(m.v, 120)) : '<span class="empty-val">(empty)</span>') + '</span></li>'
+                ).join('') + '</ul>';
+            } else {
+                html += '<p style="font-size:0.8rem;color:var(--text-secondary)">No Open Graph or Twitter Card tags found. These help agents and social platforms title, summarize, and preview the page.</p>';
+            }
+
+            // Heading outline
+            html += '<div class="subhead">Heading outline (H1–H6)</div>';
+            if (r.headings.length) {
+                html += '<div class="heading-tree">';
+                r.headings.forEach(h => {
+                    const flags = [];
+                    if (h.text === '(empty heading)') flags.push('empty');
+                    const indent = (h.level - 1) * 16;
+                    html += '<div class="hnode" style="margin-left:' + indent + 'px">' +
+                        '<span class="htag">H' + h.level + '</span>' + esc(truncate(h.text, 90)) +
+                        (flags.length ? '<span class="hflag">⚠ ' + flags.join(', ') + '</span>' : '') + '</div>';
+                });
+                html += '</div>';
+            } else {
+                html += '<p style="font-size:0.8rem;color:var(--orange)">No headings found. Agents use headings to understand structure and topic — there\'s no outline to follow here.</p>';
+            }
+
+            // Problem flags
+            const probs = [];
+            if (r.h1Count === 0) probs.push('No H1 — the page has no primary headline element.');
+            if (r.h1Count > 1) probs.push('Multiple H1s (' + r.h1Count + ') — agents can\'t tell which is the page\'s main topic.');
+            if (r.skips.length) probs.push('Skipped heading levels (' + r.skips.map(s => 'H' + s.from + '→H' + s.to).join(', ') + ') — the outline has gaps.');
+            if (!r.jsonld.length) probs.push('No JSON-LD structured data.');
+            if (!r.metaDescription) probs.push('No meta description.');
+            if (probs.length) {
+                html += '<div class="subhead">Flagged problems</div>' +
+                    '<ul style="padding-left:1.1rem;font-size:0.82rem;color:var(--text-secondary)">' +
+                    probs.map(p => '<li style="margin-bottom:0.25rem">' + esc(p) + '</li>').join('') + '</ul>';
+            }
+
+            // ── Authority & freshness (E-E-A-T) ──
+            html += '<div class="subhead">Authority &amp; freshness signals</div>';
+            html += '<div style="font-size:0.8rem;color:var(--text-secondary)">Engines weight recency and authorship, and use entity links (sameAs) to resolve which real-world entity you are.</div>';
+            html += '<div class="mini-fact-row">';
+            const af = [
+                ['Author', r.author ? r.author + (r.authorSource ? ' (' + r.authorSource + ')' : '') : ''],
+                ['Published', r.datePublished],
+                ['Modified', r.dateModified],
+                ['Visible time / updated cue', r.timeEls.length ? r.timeEls[0] : (r.hasFreshness && !r.datePublished && !r.dateModified ? 'detected' : '')],
+                ['Entity links (sameAs)', r.sameAs.length ? r.sameAs.length + ' link' + (r.sameAs.length === 1 ? '' : 's') : '']
+            ];
+            af.forEach(f => {
+                html += '<div class="mini-fact"><div class="mfk">' + esc(f[0]) + '</div>' +
+                    '<div class="mfv">' + (f[1] ? esc(truncate(f[1], 70)) : '<span class="empty-val">absent</span>') + '</div></div>';
+            });
+            html += '</div>';
+            if (r.sameAs.length) {
+                html += '<ul class="meta-list" style="margin-top:0.6rem">' + r.sameAs.slice(0, 6).map(u =>
+                    '<li><span class="mk">sameAs</span><span class="mv">' + esc(truncate(u, 90)) + '</span></li>').join('') + '</ul>';
+            } else {
+                html += '<p style="font-size:0.78rem;color:var(--text-secondary);margin-top:0.5rem">No <code>sameAs</code> entity links in JSON-LD. Adding links to your verified profiles (Google Business, Wikipedia, social, industry directories) helps engines confirm you are who you say you are.</p>';
+            }
+
+            el.innerHTML = html;
+        }
+
+        function renderSemantic(r) {
+            const el = document.getElementById('p3-body');
+            let html = '';
+
+            // Landmarks
+            const lmCount = Object.values(r.landmarks).filter(Boolean).length;
+            const present = Object.entries(r.landmarks).filter(([k, v]) => v).map(([k]) => '<' + k + '>');
+            const missing = Object.entries(r.landmarks).filter(([k, v]) => !v).map(([k]) => '<' + k + '>');
+            html += statusLine(
+                r.landmarks.main ? (lmCount >= 3 ? 'pass' : 'warn') : 'fail',
+                'Landmark regions',
+                'Present: ' + (present.length ? esc(present.join(', ')) : 'none') +
+                (missing.length ? ' &middot; Missing: ' + esc(missing.join(', ')) : '') +
+                (!r.landmarks.main ? ' — no &lt;main&gt; means an agent can\'t isolate the primary content.' : ''),
+                null
+            );
+
+            // Alt coverage
+            let altState = 'pass', altDetail;
+            if (r.imgTotal === 0) altDetail = 'No images on the page.';
+            else {
+                altDetail = r.imgWithAlt + ' of ' + r.imgTotal + ' images have alt text.';
+                if (r.imgMissingAlt.length) { altState = r.imgWithAlt / r.imgTotal < 0.5 ? 'fail' : 'warn'; }
+            }
+            html += statusLine(altState, 'Image alt-text coverage', altDetail,
+                r.imgMissingAlt.length ? r.imgMissingAlt : null,
+                'Show ' + r.imgMissingAlt.length + ' image' + (r.imgMissingAlt.length === 1 ? '' : 's') + ' missing alt');
+
+            // Link quality
+            const linkIssues = r.emptyLinks.length + r.vagueLinks.length;
+            let linkState = 'pass', linkDetail;
+            if (r.linkTotal === 0) linkDetail = 'No links found.';
+            else if (linkIssues === 0) linkDetail = 'All ' + r.linkTotal + ' links have descriptive text.';
+            else {
+                linkState = linkIssues > 3 ? 'fail' : 'warn';
+                linkDetail = linkIssues + ' of ' + r.linkTotal + ' links are empty or use vague text (e.g. "click here").';
+            }
+            const linkOff = r.emptyLinks.map(h => '(empty link) → ' + h).concat(r.vagueLinks);
+            html += statusLine(linkState, 'Link-text quality', linkDetail,
+                linkOff.length ? linkOff : null,
+                'Show ' + linkOff.length + ' weak link' + (linkOff.length === 1 ? '' : 's'));
+
+            // Form labels
+            let formState = 'pass', formDetail;
+            if (r.fieldTotal === 0) formDetail = 'No form inputs on the page.';
+            else if (r.unlabeled.length === 0) formDetail = 'All ' + r.fieldTotal + ' form inputs have labels.';
+            else { formState = 'warn'; formDetail = r.labeledFields + ' of ' + r.fieldTotal + ' form inputs have an accessible label.'; }
+            html += statusLine(formState, 'Form input labels', formDetail,
+                r.unlabeled.length ? r.unlabeled : null,
+                'Show ' + r.unlabeled.length + ' unlabeled input' + (r.unlabeled.length === 1 ? '' : 's'));
+
+            // Lang
+            html += statusLine(r.langAttr ? 'pass' : 'warn', 'Document language',
+                r.langAttr ? 'lang="' + esc(r.langAttr) + '" is declared.' : 'No lang attribute on &lt;html&gt; — agents can\'t reliably detect the content language.',
+                null);
+
+            el.innerHTML = html;
+        }
+
+        /* Pull a business name + facts from JSON-LD / OG / title. */
+        function deriveEntity(r) {
+            const out = { name: '', type: '', desc: '', phone: '', email: '', address: '', hours: '', url: '', price: '',
+                faqs: [], services: [], servicesSource: '', ratingValue: '', reviewCount: '', sameAs: [], credentials: [] };
+            r.jsonld.forEach(node => {
+                const t = node['@type'];
+                const types = Array.isArray(t) ? t.map(String) : (t ? [String(t)] : []);
+                const isBiz = types.some(x => /Organization|LocalBusiness|Store|Restaurant|Corporation|Business|Professional|Hotel|Dentist|Physician|Service/i.test(x));
+                if (isBiz || (node.name && !out.name)) {
+                    if (node.name && !out.name) out.name = collapseWs(node.name);
+                    if (types.length && !out.type) out.type = types[0];
+                    if (node.description && !out.desc) out.desc = collapseWs(node.description);
+                    if (node.telephone && !out.phone) out.phone = collapseWs(node.telephone);
+                    if (node.priceRange && !out.price) out.price = collapseWs(node.priceRange);
+                    if (node.url && !out.url) out.url = collapseWs(node.url);
+                    if (node.address && !out.address) {
+                        const a = node.address;
+                        if (typeof a === 'string') out.address = collapseWs(a);
+                        else if (typeof a === 'object') {
+                            out.address = collapseWs([a.streetAddress, a.addressLocality, a.addressRegion, a.postalCode].filter(Boolean).join(', '));
+                        }
+                    }
+                    if (node.openingHours && !out.hours) {
+                        out.hours = collapseWs(Array.isArray(node.openingHours) ? node.openingHours.join('; ') : node.openingHours);
+                    }
+                    if (node.openingHoursSpecification && !out.hours) {
+                        const spec = Array.isArray(node.openingHoursSpecification) ? node.openingHoursSpecification : [node.openingHoursSpecification];
+                        out.hours = spec.map(s => collapseWs([(Array.isArray(s.dayOfWeek)?s.dayOfWeek.join('/'):s.dayOfWeek), s.opens, s.closes].filter(Boolean).join(' '))).join('; ');
+                    }
+                    if (!out.email && node.email) out.email = collapseWs(String(node.email)).replace(/^mailto:/i, '');
+                    // aggregateRating
+                    if (node.aggregateRating && typeof node.aggregateRating === 'object') {
+                        if (!out.ratingValue && node.aggregateRating.ratingValue != null) out.ratingValue = collapseWs(String(node.aggregateRating.ratingValue));
+                        if (!out.reviewCount && (node.aggregateRating.reviewCount != null || node.aggregateRating.ratingCount != null))
+                            out.reviewCount = collapseWs(String(node.aggregateRating.reviewCount != null ? node.aggregateRating.reviewCount : node.aggregateRating.ratingCount));
+                    }
+                    // credentials / awards
+                    if (node.award) { const aw = Array.isArray(node.award) ? node.award : [node.award]; aw.forEach(a => out.credentials.push(collapseWs(String(a)))); }
+                    if (node.hasCredential) { const cr = Array.isArray(node.hasCredential) ? node.hasCredential : [node.hasCredential];
+                        cr.forEach(c => out.credentials.push(collapseWs(typeof c === 'object' ? (c.name || JSON.stringify(c)) : String(c)))); }
+                    // sameAs
+                    if (node.sameAs) { const sa = Array.isArray(node.sameAs) ? node.sameAs : [node.sameAs]; sa.forEach(u => { if (u) out.sameAs.push(collapseWs(String(u))); }); }
+                    // services: hasOfferCatalog / makesOffer
+                    const collectOffers = (cat) => {
+                        if (!cat) return;
+                        const items = cat.itemListElement || cat;
+                        const arr = Array.isArray(items) ? items : [items];
+                        arr.forEach(it => {
+                            if (!it) return;
+                            const offered = it.itemOffered || it;
+                            const nm = (offered && (offered.name || offered)) || it.name;
+                            if (nm && typeof nm === 'string') out.services.push(collapseWs(nm));
+                            else if (offered && offered.name) out.services.push(collapseWs(offered.name));
+                        });
+                    };
+                    if (node.hasOfferCatalog) { collectOffers(node.hasOfferCatalog); if (out.services.length) out.servicesSource = 'JSON-LD'; }
+                    if (node.makesOffer) { collectOffers(node.makesOffer); if (out.services.length && !out.servicesSource) out.servicesSource = 'JSON-LD'; }
+                }
+                // Service type node
+                if (types.some(x => /^Service$/i.test(x)) && node.name) {
+                    out.services.push(collapseWs(node.name));
+                    if (!out.servicesSource) out.servicesSource = 'JSON-LD';
+                }
+                // FAQ
+                if (types.some(x => /FAQPage/i.test(x)) && Array.isArray(node.mainEntity)) {
+                    node.mainEntity.forEach(q => {
+                        if (q && q.name) {
+                            let ans = '';
+                            if (q.acceptedAnswer) ans = collapseWs(q.acceptedAnswer.text || q.acceptedAnswer.name || '');
+                            out.faqs.push({ q: collapseWs(q.name), a: ans });
+                        }
+                    });
+                }
+            });
+            // OG fallbacks
+            if (!out.name) { const s = r.og.find(o => o.k && o.k.toLowerCase() === 'og:site_name'); if (s) out.name = s.v; }
+            if (!out.desc) { const d = r.og.find(o => o.k && o.k.toLowerCase() === 'og:description'); if (d) out.desc = d.v; }
+            if (!out.desc) out.desc = r.metaDescription;
+            // Title fallback for name: take chunk before a separator
+            if (!out.name && r.title) out.name = collapseWs(r.title.split(/[|–—\-:]/)[0]);
+            if (!out.name && r.headings.length) { const h1 = r.headings.find(h => h.level === 1); if (h1) out.name = h1.text; }
+
+            // sameAs from JSON-LD already collected on r; merge + dedup
+            out.sameAs = Array.from(new Set(out.sameAs.concat(r.sameAs || [])));
+            out.services = Array.from(new Set(out.services.filter(Boolean)));
+
+            // Infer services from headings + list items if none from schema
+            if (!out.services.length) {
+                const svcHeadings = r.headings
+                    .filter(h => h.level >= 2 && h.level <= 3 && h.text !== '(empty heading)')
+                    .map(h => h.text)
+                    .filter(t => /service|offering|what we|we offer|specialt|treatment|menu|deliver|wedding|event|repair|consult|design|care|class|program|package/i.test(t));
+                if (svcHeadings.length) { out.services = svcHeadings.slice(0, 6); out.servicesSource = 'inferred from headings'; }
+            }
+
+            // Email fallback from mailto links / readable text
+            if (!out.email) {
+                const m = (r.readable || '').match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/);
+                if (m) { out.email = m[0]; }
+            }
+            return out;
+        }
+
+        /* ════════════════════════════════════════════
+           ANSWERABILITY MODEL (Workstream B)
+           Resolve fixed intents to {status, value, source}.
+           status: 'high' (structured → quotable verbatim),
+                   'med'  (inferred from prose/headings → may paraphrase),
+                   'none' (absent → omit or hallucinate).
+           ════════════════════════════════════════════ */
+        function buildAnswerability(r, e) {
+            const A = {};
+            const set = (k, status, value, source) => { A[k] = { status: status, value: value || '', source: source || '' }; };
+
+            // Who/What
+            if (e.name && e.type && !/WebPage|WebSite/i.test(e.type)) set('whoWhat', 'high', e.name + ' — ' + e.type.replace(/([a-z])([A-Z])/g, '$1 $2'), 'from JSON-LD');
+            else if (e.name) set('whoWhat', 'med', e.name + (e.type && !/WebPage|WebSite/i.test(e.type) ? ' — ' + e.type : ''), e.type && !/WebPage|WebSite/i.test(e.type) ? 'from JSON-LD' : 'inferred from title/headings');
+            else set('whoWhat', 'none', '', '');
+
+            // Where
+            if (e.address) set('where', 'high', e.address, 'from JSON-LD');
+            else {
+                const m = (r.readable || '').match(/\d{1,5}\s+[A-Za-z0-9.\s]{3,40}(?:Street|St|Ave|Avenue|Blvd|Boulevard|Road|Rd|Lane|Ln|Drive|Dr|Way|Court|Ct|Place|Pl)\b/i);
+                if (m) set('where', 'med', collapseWs(m[0]), 'inferred from prose');
+                else set('where', 'none', '', '');
+            }
+
+            // Hours
+            if (e.hours) set('hours', 'high', e.hours, 'from JSON-LD');
+            else if (/\b(mon|tue|wed|thu|fri|sat|sun)[a-z]*\b.{0,20}\b\d{1,2}\s?(am|pm|:)/i.test(r.readable) || /open\s+(mon|tue|wed|thu|fri|sat|sun|daily|every)/i.test(r.readable)) {
+                const hm = (r.readable || '').match(/[^.]*\b(?:open|hours)\b[^.]*\./i);
+                set('hours', 'med', hm ? collapseWs(truncate(hm[0], 90)) : 'mentioned in prose', 'inferred from prose');
+            } else set('hours', 'none', '', '');
+
+            // Pricing
+            if (e.price) set('pricing', 'high', e.price, 'from JSON-LD priceRange');
+            else if (/\$\s?\d|\bfree\b|\bprice|\bcost|\bfee\b|\bstarting at|\bper (hour|person|night|session)/i.test(r.readable)) {
+                const pm = (r.readable || '').match(/[^.]*(?:\$\s?\d[\d.,]*|\bfree\b|starting at|per (?:hour|person|night|session))[^.]*\./i);
+                set('pricing', 'med', pm ? collapseWs(truncate(pm[0], 90)) : 'price language in prose', 'inferred from prose');
+            } else set('pricing', 'none', '', '');
+
+            // Contact
+            if (e.phone) set('contact', 'high', e.phone + (e.email ? ' · ' + e.email : ''), 'from JSON-LD');
+            else {
+                const pm = (r.readable || '').match(/(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
+                if (pm || e.email) set('contact', 'med', [pm ? pm[0] : '', e.email].filter(Boolean).join(' · '), 'inferred from prose');
+                else set('contact', 'none', '', '');
+            }
+
+            // Services
+            if (e.services.length && e.servicesSource === 'JSON-LD') set('services', 'high', e.services.slice(0, 5).join(', '), 'from JSON-LD');
+            else if (e.services.length) set('services', 'med', e.services.slice(0, 5).join(', '), e.servicesSource || 'inferred from headings');
+            else set('services', 'none', '', '');
+
+            // Trust / Credentials
+            if (e.credentials.length) set('trust', 'high', e.credentials.slice(0, 3).join(', '), 'from JSON-LD');
+            else if (/\b(licensed|certified|award|accredit|since \d{4}|years of experience|established|family-owned|board-certified)\b/i.test(r.readable)) {
+                const tm = (r.readable || '').match(/[^.]*\b(?:licensed|certified|award|accredit|since \d{4}|family-owned|established|board-certified)\b[^.]*\./i);
+                set('trust', 'med', tm ? collapseWs(truncate(tm[0], 90)) : 'trust cues in prose', 'inferred from prose');
+            } else set('trust', 'none', '', '');
+
+            // Reviews
+            if (e.ratingValue) set('reviews', 'high', e.ratingValue + (e.reviewCount ? ' (' + e.reviewCount + ' reviews)' : '') + ' ★', 'from JSON-LD aggregateRating');
+            else if (/\b\d(?:\.\d)?\s*(?:\/\s*5|stars?)\b|\breview/i.test(r.readable)) {
+                set('reviews', 'med', 'review language in prose', 'inferred from prose');
+            } else set('reviews', 'none', '', '');
+
+            return A;
+        }
+
+        const INTENT_LABELS = {
+            whoWhat: 'Who / What', where: 'Where', hours: 'Hours', pricing: 'Pricing',
+            contact: 'Contact', services: 'Services', trust: 'Trust / Credentials', reviews: 'Reviews'
+        };
+        const INTENT_ORDER = ['whoWhat','where','hours','pricing','contact','services','trust','reviews'];
+
+        // Live state for the query simulator (rebuilt each analysis).
+        let ANSWER_STATE = null;
+
+        function renderAnswer(r) {
+            const el = document.getElementById('p4-body');
+            const e = deriveEntity(r);
+            const A = buildAnswerability(r, e);
+            let html = '';
+
+            // ── Build a synthesized sentence-level answer ──
+            const sentences = [];
+            if (e.name) {
+                let lead = '<strong>' + esc(e.name) + '</strong>';
+                if (e.type && !/^(WebPage|WebSite|Article|BlogPosting)$/i.test(e.type)) lead += ' is a ' + esc(e.type.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase());
+                const what = e.desc || (r.paragraphs[0] || '');
+                if (what) lead += '. ' + esc(truncate(what, 280));
+                else lead += '.';
+                sentences.push(lead);
+            } else if (r.paragraphs[0]) {
+                sentences.push(esc(truncate(r.paragraphs[0], 300)));
+            }
+            if (e.address) sentences.push('It is located at ' + esc(e.address) + '.');
+            if (e.hours) sentences.push('Hours: ' + esc(truncate(e.hours, 160)) + '.');
+            if (e.phone) sentences.push('It can be reached at ' + esc(e.phone) + '.');
+            if (e.ratingValue) sentences.push('It is rated ' + esc(e.ratingValue) + (e.reviewCount ? ' from ' + esc(e.reviewCount) + ' reviews' : '') + '.');
+
+            const answerProse = sentences.length
+                ? sentences.join(' ')
+                : '<span class="empty-val">An agent could not confidently identify a business from this page. There is no business name in the title, headings, JSON-LD, or social tags, and no substantive lead paragraph to summarize.</span>';
+
+            const plain = sentences.map(s => s.replace(/<[^>]+>/g, '')).join(' ')
+                .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"') || 'No confident business answer could be assembled from this page.';
+
+            html += '<div class="answer-card">' +
+                '<span class="robot">&#129302;</span>' +
+                '<h4>What an agent could confidently state</h4>' +
+                '<div class="answer-text">' + answerProse + '</div>';
+
+            // ── ANSWERABILITY MATRIX ──
+            html += '<div class="subhead" style="margin-top:1.2rem">Answerability map — what an agent can cover</div>';
+            html += '<div class="ans-matrix">';
+            INTENT_ORDER.forEach(k => {
+                const cell = A[k];
+                const valHtml = cell.value
+                    ? '<div class="ac-val">' + esc(truncate(cell.value, 70)) + '</div>'
+                    : '<div class="ac-val empty">not exposed</div>';
+                html += '<div class="ans-cell"><div class="ans-dot ' + cell.status + '"></div>' +
+                    '<div><div class="ac-intent">' + esc(INTENT_LABELS[k]) + '</div>' + valHtml + '</div></div>';
+            });
+            html += '</div>';
+            html += '<div style="font-size:0.74rem;color:var(--text-light);margin:0.3rem 0 0.2rem">' +
+                '<span class="ans-dot high" style="display:inline-block;margin-right:0.25rem"></span>Quotable from structured data &nbsp; ' +
+                '<span class="ans-dot med" style="display:inline-block;margin:0 0.25rem 0 0.6rem"></span>Inferred from prose (agent may paraphrase or err) &nbsp; ' +
+                '<span class="ans-dot none" style="display:inline-block;margin:0 0.25rem 0 0.6rem"></span>Absent (agent omits or risks guessing)</div>';
+
+            // ── PER-FACT GRID with confidence + provenance ──
+            const factDefs = [
+                ['Name', e.name ? { status: A.whoWhat.status, value: e.name, source: A.whoWhat.source } : null],
+                ['Type', (e.type && !/WebPage|WebSite/i.test(e.type)) ? { status: 'high', value: e.type, source: 'from JSON-LD' } : null],
+                ['Location', A.where.value ? A.where : null],
+                ['Hours', A.hours.value ? A.hours : null],
+                ['Contact', A.contact.value ? A.contact : null],
+                ['Pricing', A.pricing.value ? A.pricing : null],
+                ['Services', A.services.value ? A.services : null],
+                ['Reviews', A.reviews.value ? A.reviews : null]
+            ].filter(f => f[1]);
+            if (factDefs.length) {
+                html += '<div class="subhead" style="margin-top:1.1rem">Per-fact confidence</div>';
+                html += '<div class="answer-facts">' + factDefs.map(f => {
+                    const cf = f[1];
+                    return '<div class="fact"><div class="fk">' + esc(f[0]) +
+                        '<span class="conf-badge ' + cf.status + '">' + cf.status + '</span></div>' +
+                        '<div class="fv">' + esc(truncate(cf.value, 60)) + '</div>' +
+                        (cf.source ? '<div class="fsrc">' + esc(cf.source) + '</div>' : '') + '</div>';
+                }).join('') + '</div>';
+            }
+
+            // ── QUOTABLE SNIPPET ──
+            let quote = '', quoteWhy = '', quoteWarn = false;
+            if (e.desc) { quote = e.desc; quoteWhy = 'Pulled from your schema description — the cleanest, intentional summary an engine would lift verbatim.'; }
+            else {
+                // best answer-first substantive paragraph
+                const best = (r.paragraphs || []).slice().sort((a, b) => b.length - a.length)[0];
+                if (best && best.split(/\s+/).filter(Boolean).length >= 12) {
+                    quote = best; quoteWhy = 'Your most substantive lead paragraph — the likeliest passage an engine would quote in the absence of a schema description.';
+                } else { quoteWarn = true; }
+            }
+            if (quoteWarn || !quote) {
+                html += '<div class="quote-card warn"><div class="qc-label">⚠ No clean quotable block</div>' +
+                    '<div class="qc-why">There\'s no schema <code>description</code> and no substantive answer paragraph for an engine to cite. It would have to stitch a quote from fragments or skip you. Add a concise description and a strong lead paragraph.</div></div>';
+            } else {
+                const qid = 'quote-txt';
+                html += '<div class="quote-card"><div class="qc-label">Most citation-worthy chunk</div>' +
+                    '<div class="qc-text" id="' + qid + '">“' + esc(truncate(quote, 320)) + '”</div>' +
+                    '<div class="qc-why">' + esc(quoteWhy) + '</div>' +
+                    '<div style="margin-top:0.6rem"><button class="btn btn-secondary" id="copy-quote-btn" style="font-size:0.74rem;padding:0.4rem 0.9rem">Copy snippet</button></div></div>';
+            }
+
+            // ── INTERACTIVE QUERY SIMULATOR ──
+            const bizName = e.name || 'this business';
+            const suggestions = [];
+            (e.faqs || []).slice(0, 3).forEach(f => { if (f.q) suggestions.push(f.q); });
+            suggestions.push('Where is ' + bizName + ' located?');
+            suggestions.push("What are " + bizName + "'s hours?");
+            suggestions.push('How much does ' + bizName + ' cost?');
+            suggestions.push('How do I contact ' + bizName + '?');
+            suggestions.push('What services does ' + bizName + ' offer?');
+            suggestions.push('Is ' + bizName + ' reputable / well reviewed?');
+
+            html += '<div class="qsim">' +
+                '<div class="subhead" style="margin-top:0">Ask it like an agent would</div>' +
+                '<div style="font-size:0.8rem;color:var(--text-secondary)">Click a question or type your own. We map it to the best-matching intent and show exactly what your page can support — rule-based, no AI call.</div>' +
+                '<div class="qsim-chips" id="qsim-chips">' +
+                suggestions.map(q => '<button class="qchip" type="button" data-q="' + esc(q) + '">' + esc(truncate(q, 60)) + '</button>').join('') +
+                '</div>' +
+                '<div class="qsim-input-row">' +
+                '<input type="text" id="qsim-input" placeholder="Type a question about this business…" aria-label="Ask a question about this business">' +
+                '<button class="btn btn-secondary" id="qsim-ask" style="font-size:0.78rem;padding:0.5rem 1.1rem">Ask</button>' +
+                '</div>' +
+                '<div id="qsim-result"></div>' +
+                '</div>';
+
+            // ── GAP NOTES (driven by 'none' intents) ──
+            const gaps = INTENT_ORDER.filter(k => A[k].status === 'none').map(k => INTENT_LABELS[k].toLowerCase());
+            if (gaps.length) {
+                html += '<div class="gap-box"><div class="gh">An agent could NOT determine</div>' +
+                    '<p><span class="gitem">' + gaps.map(esc).join('</span>, <span class="gitem">') + '</span> — these aren\'t exposed in machine-readable markup or detectable prose, so an agent would omit them or risk guessing.</p></div>';
+            }
+
+            html += '<div class="answer-actions">' +
+                '<button class="btn btn-secondary" id="copy-answer-btn" style="font-size:0.78rem;padding:0.5rem 1.1rem">Copy assembled answer</button>' +
+                '</div>';
+
+            html += '</div>';
+            el.innerHTML = html;
+
+            // ── wire up interactivity ──
+            ANSWER_STATE = { A: A, e: e, name: bizName };
+
+            const cab = document.getElementById('copy-answer-btn');
+            if (cab) cab.onclick = function () { copyText(cab, plain); };
+            const cqb = document.getElementById('copy-quote-btn');
+            if (cqb) cqb.onclick = function () { copyText(cqb, quote); };
+
+            const input = document.getElementById('qsim-input');
+            const askBtn = document.getElementById('qsim-ask');
+            const runQ = () => { if (input) answerQuery(input.value); };
+            if (askBtn) askBtn.onclick = runQ;
+            if (input) input.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); runQ(); } });
+            const chips = document.getElementById('qsim-chips');
+            if (chips) {
+                chips.querySelectorAll('.qchip').forEach(btn => {
+                    btn.onclick = function () {
+                        if (input) input.value = btn.getAttribute('data-q') || '';
+                        answerQuery(btn.getAttribute('data-q') || '');
+                    };
+                });
+            }
+        }
+
+        /* Map a free-text question to the best intent and render the page-supported answer. */
+        function mapQueryToIntent(q) {
+            const s = ' ' + q.toLowerCase().replace(/[^a-z0-9$ ]/g, ' ') + ' ';
+            const score = { whoWhat: 0, where: 0, hours: 0, pricing: 0, contact: 0, services: 0, trust: 0, reviews: 0 };
+            const bump = (k, kw) => kw.forEach(w => { if (s.indexOf(' ' + w + ' ') >= 0 || s.indexOf(' ' + w) >= 0) score[k]++; });
+            bump('where', ['where', 'located', 'location', 'address', 'directions', 'find', 'map', 'parish', 'near']);
+            bump('hours', ['hour', 'hours', 'open', 'opening', 'close', 'closing', 'when', 'time', 'today', 'weekend']);
+            bump('pricing', ['price', 'pricing', 'cost', 'costs', 'how much', 'fee', 'fees', 'expensive', 'cheap', 'rate', 'rates', '$']);
+            bump('contact', ['contact', 'phone', 'call', 'email', 'reach', 'number', 'message']);
+            bump('services', ['service', 'services', 'offer', 'offers', 'do you', 'provide', 'sell', 'menu', 'specialty', 'help with', 'product']);
+            bump('trust', ['reputable', 'trust', 'licensed', 'certified', 'award', 'experience', 'reliable', 'legit', 'credential', 'qualified']);
+            bump('reviews', ['review', 'reviews', 'rating', 'rated', 'star', 'stars', 'reputation', 'recommend', 'well reviewed']);
+            bump('whoWhat', ['who', 'what is', 'what are', 'about', 'kind of', 'type of', 'what does']);
+            // "how much" strongly implies pricing
+            if (/how much/.test(s)) score.pricing += 2;
+            let best = 'whoWhat', bestN = -1;
+            INTENT_ORDER.forEach(k => { if (score[k] > bestN) { bestN = score[k]; best = k; } });
+            return bestN <= 0 ? 'whoWhat' : best;
+        }
+
+        function answerQuery(q) {
+            const out = document.getElementById('qsim-result');
+            if (!out || !ANSWER_STATE) return;
+            q = collapseWs(q || '');
+            if (!q) { out.innerHTML = ''; return; }
+            const intent = mapQueryToIntent(q);
+            const cell = ANSWER_STATE.A[intent];
+            const label = INTENT_LABELS[intent];
+            let html;
+            if (cell.status === 'none' || !cell.value) {
+                html = '<div class="qsim-answer miss">' +
+                    '<div class="qa-q">' + esc(truncate(q, 90)) + ' &middot; matched: ' + esc(label) + '</div>' +
+                    'This page doesn\'t expose that, so an agent would omit it or risk guessing. There\'s no structured data or detectable prose covering ' + esc(label.toLowerCase()) + '.' +
+                    '</div>';
+            } else {
+                const confNote = cell.status === 'high'
+                    ? 'An agent can quote this verbatim.'
+                    : 'An agent could surface this but may paraphrase or get details wrong — it\'s inferred, not structured.';
+                html = '<div class="qsim-answer">' +
+                    '<div class="qa-q">' + esc(truncate(q, 90)) + ' &middot; matched: ' + esc(label) +
+                    '<span class="conf-badge ' + cell.status + '">' + cell.status + '</span></div>' +
+                    esc(cell.value) + ' <span style="color:var(--text-secondary)">— ' + esc(confNote) + '</span>' +
+                    (cell.source ? '<div class="qa-src">Source: ' + esc(cell.source) + '</div>' : '') +
+                    '</div>';
+            }
+            out.innerHTML = html;
+        }
+
+        /* ════════════════════════════════════════════
+           MARKDOWN REPORT EXPORT
+           Serializes the FULL diagnosis from the result object `r`
+           using the SAME computed data the panels render.
+           ════════════════════════════════════════════ */
+        function buildMarkdownReport(r) {
+            if (!r) return '';
+            const L = [];                        // line accumulator
+            const push = (s) => L.push(s == null ? '' : String(s));
+            const blank = () => L.push('');
+            const yn = (v) => v ? 'Yes' : 'No';
+            // Strip markdown-significant chars from inline values so the report stays clean.
+            const mdv = (v) => collapseWs(String(v == null ? '' : v)).replace(/\|/g, '\\|');
+            const dash = (v) => { v = mdv(v); return v ? v : '—'; };
+
+            const e = deriveEntity(r);
+            const A = buildAnswerability(r, e);
+            const d = r.directives || {};
+            const gr = gradeFor(r);
+
+            // ── Header / context ──
+            push('# Agent Eye View — AI Agent Readiness Report');
+            blank();
+            push('**Page title:** ' + dash(r.title));
+            const ctxUrl = r.canonical || (e && e.url) || '';
+            push('**URL (canonical / declared):** ' + dash(ctxUrl));
+            if (r.metaDescription) push('**Meta description:** ' + mdv(r.metaDescription));
+            push('**Document language:** ' + (r.langAttr ? '`' + mdv(r.langAttr) + '`' : 'not declared'));
+            push('**Generated:** ' + new Date().toLocaleString());
+            blank();
+
+            // ── Score ──
+            push('## Agent-Readiness Score');
+            blank();
+            push('**' + r.score + ' / 100**' + (r.scoreCapped ? '  _(capped)_' : ''));
+            blank();
+            push('> ' + mdv(gr.text));
+            blank();
+
+            // ── AI Access & Crawlability ──
+            push('## AI Access & Crawlability');
+            blank();
+            push('- **AI usage blocked:** ' + (d.blocked
+                ? 'Yes — ' + (d.blockReasons || []).join(', ')
+                : 'No usage-blocking directives'));
+            const restrictive = [];
+            if (d.noindex) restrictive.push('noindex');
+            if (d.nofollow) restrictive.push('nofollow');
+            if (d.nosnippet) restrictive.push('nosnippet');
+            if (d.noarchive) restrictive.push('noarchive');
+            if (d.maxSnippet != null) restrictive.push('max-snippet:' + d.maxSnippet);
+            if (d.noai) restrictive.push('noai');
+            if (d.noimageai) restrictive.push('noimageai');
+            if (d.dataNosnippetCount) restrictive.push(d.dataNosnippetCount + '× data-nosnippet');
+            push('- **Robots / AI-bot directives:** ' + (restrictive.length ? restrictive.join(', ') : 'none (default = indexable)'));
+            if (d.rawMetas && d.rawMetas.length) {
+                d.rawMetas.forEach(m => push('  - `' + mdv(m.name) + '`: ' + mdv(m.content)));
+            }
+            let jsLabel = 'Low risk — substantive text is present directly in the HTML';
+            if (r.jsRisk === 'likely') jsLabel = 'LIKELY — content appears JS-rendered; most AI crawlers do not execute JS and may see almost nothing';
+            else if (r.jsRisk === 'possible') jsLabel = 'Possible — some content may be JS-rendered; verify key facts exist in raw HTML';
+            push('- **JS-dependency / content-visibility risk:** ' + jsLabel
+                + ' (' + (r.wordCount || 0) + ' readable words, ' + (r.scriptTotal || 0) + ' script tag' + ((r.scriptTotal === 1) ? '' : 's') + ')');
+            push('- **Canonical URL:** ' + (r.hasCanonical ? mdv(r.canonical) : 'not declared'));
+            push('');
+            push('_Note: robots.txt-level bot blocking lives in a separate file this tool cannot see from pasted HTML._');
+            blank();
+
+            // ── Readable content ──
+            push('## Readable Content');
+            blank();
+            push('- **Readable words:** ' + (r.wordCount || 0).toLocaleString());
+            push('- **Content depth:** ' + dash(r.depth));
+            push('- **Substantive paragraphs:** ' + ((r.paragraphs && r.paragraphs.length) || 0));
+            blank();
+            push('**Extractable structure:**');
+            push('- Lists (ul/ol): ' + (r.lists || 0));
+            push('- Tables: ' + (r.tables || 0));
+            push('- Answer-first paragraphs: ' + (r.answerFirstCount || 0));
+            push('- Question-style headings: ' + ((r.questionHeadings && r.questionHeadings.length) || 0));
+            push('- FAQ-like content: ' + yn(r.faqLike) + (r.hasFaqSchema ? ' (FAQPage schema present)' : ''));
+            push('- Extractable-signal score: ' + (r.extractableScore || 0) + ' / 5');
+            blank();
+
+            // ── Structured data ──
+            push('## Structured Data');
+            blank();
+            push('**JSON-LD types found:** ' + ((r.jsonldTypes && r.jsonldTypes.length) ? r.jsonldTypes.map(mdv).join(', ') : 'none'));
+            blank();
+            if (r.schemaCompleteness && r.schemaCompleteness.length) {
+                push('**Schema completeness:**');
+                blank();
+                push('| Type | Present | Recommended | % | Missing properties |');
+                push('| --- | --- | --- | --- | --- |');
+                r.schemaCompleteness.forEach(c => {
+                    const pct = c.recommended ? Math.round((c.present / c.recommended) * 100) : 0;
+                    const miss = (c.missingProps && c.missingProps.length) ? c.missingProps.map(mdv).join(', ') : 'none';
+                    push('| ' + mdv(c.type) + ' | ' + c.present + ' | ' + c.recommended + ' | ' + pct + '% | ' + miss + ' |');
+                });
+                blank();
+            } else {
+                push('_No schema types matched a recommended property set._');
+                blank();
+            }
+            push('**Authority & freshness:**');
+            push('- Author: ' + (r.author ? mdv(r.author) + (r.authorSource ? ' (' + mdv(r.authorSource) + ')' : '') : 'absent'));
+            push('- Published: ' + dash(r.datePublished));
+            push('- Modified: ' + dash(r.dateModified));
+            push('- Visible time / freshness cue: ' + ((r.timeEls && r.timeEls.length) ? mdv(r.timeEls[0]) : (r.hasFreshness ? 'detected' : 'absent')));
+            const sameAs = r.sameAs || [];
+            push('- Entity links (sameAs): ' + (sameAs.length ? sameAs.length + ' link' + (sameAs.length === 1 ? '' : 's') : 'none'));
+            sameAs.slice(0, 8).forEach(u => push('  - ' + mdv(u)));
+            blank();
+
+            // ── Semantic / accessibility ──
+            push('## Semantic & Accessibility');
+            blank();
+            const lm = r.landmarks || {};
+            const lmPresent = Object.keys(lm).filter(k => lm[k]).map(k => '<' + k + '>');
+            const lmMissing = Object.keys(lm).filter(k => !lm[k]).map(k => '<' + k + '>');
+            push('- **Landmarks present:** ' + (lmPresent.length ? lmPresent.join(', ') : 'none')
+                + (lmMissing.length ? ' · missing: ' + lmMissing.join(', ') : ''));
+            push('- **Image alt coverage:** ' + (r.imgTotal === 0 ? 'no images'
+                : (r.imgWithAlt + ' of ' + r.imgTotal + ' images have alt text'
+                    + (r.imgMissingAlt && r.imgMissingAlt.length ? ' (' + r.imgMissingAlt.length + ' missing)' : ''))));
+            const linkIssues = ((r.emptyLinks && r.emptyLinks.length) || 0) + ((r.vagueLinks && r.vagueLinks.length) || 0);
+            push('- **Link-text quality:** ' + (r.linkTotal === 0 ? 'no links'
+                : (linkIssues === 0 ? 'all ' + r.linkTotal + ' links have descriptive text'
+                    : linkIssues + ' of ' + r.linkTotal + ' links empty or vague')));
+            push('- **Form input labels:** ' + (r.fieldTotal === 0 ? 'no form inputs'
+                : (r.unlabeled && r.unlabeled.length === 0 ? 'all ' + r.fieldTotal + ' inputs labeled'
+                    : (r.labeledFields + ' of ' + r.fieldTotal + ' inputs labeled'))));
+            push('- **Document language:** ' + (r.langAttr ? 'declared (`' + mdv(r.langAttr) + '`)' : 'not declared'));
+            blank();
+
+            // ── Answerability summary ──
+            push('## Answerability — What an Agent Could Assemble');
+            blank();
+            push('| Intent | Status | Value |');
+            push('| --- | --- | --- |');
+            const statusWord = { high: 'High (quotable)', med: 'Med (inferred)', none: 'None (absent)' };
+            INTENT_ORDER.forEach(k => {
+                const cell = (A && A[k]) || { status: 'none', value: '' };
+                push('| ' + mdv(INTENT_LABELS[k]) + ' | ' + (statusWord[cell.status] || cell.status)
+                    + ' | ' + (cell.value ? mdv(cell.value) : '—') + ' |');
+            });
+            blank();
+            // Quotable snippet — mirror renderAnswer's selection logic.
+            let quote = '';
+            if (e.desc) quote = e.desc;
+            else {
+                const best = (r.paragraphs || []).slice().sort((a, b) => b.length - a.length)[0];
+                if (best && best.split(/\s+/).filter(Boolean).length >= 12) quote = best;
+            }
+            push('**Most citation-worthy snippet:**');
+            push(quote ? '> ' + mdv(quote) : '> _No clean quotable block — no schema description or substantive lead paragraph for an engine to cite._');
+            blank();
+
+            // ── Prioritized fixes ──
+            push('## Prioritized Fixes');
+            blank();
+            const items = buildPunchItems(r);
+            if (!items.length) {
+                push('No critical fixes found — this page exposes the key signals an agent needs.');
+            } else {
+                const impactLabel = { high: 'High impact', med: 'Medium', low: 'Low' };
+                items.forEach((it, i) => {
+                    push((i + 1) + '. **' + mdv(it.title) + '** _(' + (impactLabel[it.impact] || it.impact) + ')_  ');
+                    push('   ' + mdv(it.detail));
+                });
+            }
+            blank();
+            push('---');
+            push('_Report generated by Agent Eye View · Search Influence · runs entirely in your browser._');
+            blank();
+
+            return L.join('\n');
+        }
+
+        function copyReport(btn) {
+            if (!LAST) return;
+            copyText(btn, buildMarkdownReport(LAST));
+        }
+
+        /* Build the prioritized fix list (shared by the on-screen punch list and the Markdown report). */
+        function buildPunchItems(r) {
+            const items = [];
+            const add = (impact, title, detail) => items.push({ impact, title, detail });
+
+            if (!r.jsonld.length) add('high', 'Add structured data (JSON-LD)', 'Add LocalBusiness or Organization JSON-LD with name, address, phone, and hours so agents can read your business facts directly instead of guessing.');
+            if (r.h1Count === 0) add('high', 'Add a single H1', 'The page has no H1. Add one clear H1 that states the page\'s main topic.');
+            else if (r.h1Count > 1) add('high', 'Reduce to one H1', 'There are ' + r.h1Count + ' H1s. Keep one primary H1 so agents know the main topic.');
+            if (!r.title) add('high', 'Add a <title>', 'The page has no title element — an agent has no headline for it.');
+            if (!r.metaDescription) add('med', 'Add a meta description', 'Give agents a 1–2 sentence summary to quote about this page.');
+            if (r.imgMissingAlt.length) add('med', 'Add alt text to ' + r.imgMissingAlt.length + ' image' + (r.imgMissingAlt.length === 1 ? '' : 's'), 'Images without alt text are invisible to agents and screen readers.');
+            const linkIssues = r.emptyLinks.length + r.vagueLinks.length;
+            if (linkIssues) add('med', 'Fix ' + linkIssues + ' vague or empty link label' + (linkIssues === 1 ? '' : 's'), 'Replace "click here" / empty links with text that describes the destination.');
+            if (!r.landmarks.main) add('med', 'Wrap primary content in <main>', 'Without a <main> landmark, agents can\'t reliably isolate the core content from navigation and chrome.');
+            if (r.skips.length) add('low', 'Fix skipped heading levels', 'Heading jumps (' + r.skips.map(s => 'H' + s.from + '→H' + s.to).join(', ') + ') break the outline agents follow.');
+            if (r.depth === 'thin') add('med', 'Add more substantive copy', 'Only ' + r.wordCount + ' readable words. Agents need enough text to summarize confidently.');
+            if (r.unlabeled.length) add('low', 'Label ' + r.unlabeled.length + ' form input' + (r.unlabeled.length === 1 ? '' : 's'), 'Unlabeled inputs make forms unusable for agents acting on the page.');
+            if (!r.langAttr) add('low', 'Declare the page language', 'Add lang="en" (or your language) to the <html> element.');
+            if (!r.og.length) add('low', 'Add Open Graph tags', 'OG tags give agents and social platforms a reliable title, description, and preview image.');
+
+            // ── AI-SEO items (Workstream A) ──
+            if (r.directives.blocked) add('high', 'Remove AI-usage-blocking directives', 'This page carries ' + r.directives.blockReasons.join(', ') + '. Until removed, AI and search engines are told not to index or quote it — no other fix can help.');
+            if (r.jsRisk === 'likely') add('high', 'Make content visible without JavaScript', 'Key text appears to be JS-rendered. Most AI crawlers do not execute JavaScript, so they may see almost nothing. Server-render or include the core facts in the raw HTML.');
+            else if (r.jsRisk === 'possible') add('med', 'Verify content exists in the raw HTML', 'Some content may be JS-rendered. Confirm your key facts are present in the served HTML, not injected client-side.');
+            // missing schema props (per business type)
+            r.schemaCompleteness.filter(c => c.isBiz && c.missingProps.length).forEach(c => {
+                add('med', 'Complete your ' + c.type + ' schema', 'Missing recommended properties: ' + c.missingProps.join(', ') + '. Add these so agents can quote your facts instead of guessing.');
+            });
+            if (r.extractableScore < 2) add('med', 'Add extractable structure', 'Little for engines to lift: no lists, tables, FAQ, or answer-first passages. Add an FAQ block, bulleted services, or lead-with-the-answer paragraphs.');
+            if (!r.hasCanonical) add('low', 'Add a canonical URL', 'Declare <link rel="canonical"> so engines know which URL is authoritative.');
+            if (!r.sameAs.length) add('low', 'Add sameAs entity links', 'List your verified profiles (Google Business, social, directories) in JSON-LD sameAs so engines can resolve which entity you are.');
+            if (!r.author) add('low', 'Declare an author', 'Add an author (JSON-LD author, meta author, or rel="author"). Engines weight authorship for E-E-A-T.');
+            if (!r.hasFreshness) add('low', 'Expose a freshness signal', 'No datePublished/dateModified or visible "updated" date. Engines favor recent, dated content.');
+
+            const order = { high: 0, med: 1, low: 2 };
+            items.sort((a, b) => order[a.impact] - order[b.impact]);
+            return items;
+        }
+
+        function renderPunchList(r) {
+            const el = document.getElementById('p5-body');
+            const items = buildPunchItems(r);
+
+            let html = '';
+            if (!items.length) {
+                html = '<div class="punch-item"><div class="punch-rank done">✓</div><div class="punch-body"><h4>No critical fixes found</h4><p>This page exposes the key signals an agent needs. Keep structured data current as the business changes.</p></div></div>';
+            } else {
+                items.forEach((it, i) => {
+                    const lbl = it.impact === 'high' ? 'High impact' : (it.impact === 'med' ? 'Medium' : 'Low');
+                    html += '<div class="punch-item"><div class="punch-rank">' + (i + 1) + '</div>' +
+                        '<div class="punch-body"><h4>' + esc(it.title) + '<span class="punch-impact ' + it.impact + '">' + lbl + '</span></h4>' +
+                        '<p>' + esc(it.detail) + '</p></div></div>';
+                });
+            }
+            el.innerHTML = html;
+        }
+
+        /* ════════════════════════════════════════════
+           DRIVER
+           ════════════════════════════════════════════ */
+        function showMsg(text) {
+            const m = document.getElementById('inline-msg');
+            m.innerHTML = text;
+            m.classList.add('show');
+        }
+        function hideMsg() { document.getElementById('inline-msg').classList.remove('show'); }
+
+        function analyze() {
+            hideMsg();
+            const raw = document.getElementById('html-input').value.trim();
+            if (!raw) {
+                showMsg('Please paste your page\'s HTML source first, or click <strong>Load sample page</strong> to see how it works.');
+                document.getElementById('results').classList.remove('show');
+                return;
+            }
+            if (!/[<][a-zA-Z!\/]/.test(raw)) {
+                showMsg('That doesn\'t look like HTML. Paste the full page source (it should contain tags like &lt;html&gt;, &lt;div&gt;, &lt;p&gt;).');
+                document.getElementById('results').classList.remove('show');
+                return;
+            }
+            let r;
+            try {
+                r = analyzeDoc(raw);
+                scoreDoc(r);
+            } catch (err) {
+                showMsg('Something went wrong parsing that HTML. It may be severely malformed — try copying the source again. (' + esc(err.message) + ')');
+                return;
+            }
+            render(r);
+        }
+
+        /* ════════════════════════════════════════════
+           SAMPLE PAGE (mid-quality, intentional issues)
+           ════════════════════════════════════════════ */
+        function loadSample() {
+            document.getElementById('html-input').value = SAMPLE_HTML;
+            hideMsg();
+            analyze();
+        }
+
+        const SAMPLE_HTML = [
+'<!DOCTYPE html>',
+'<html lang="en">',
+'<head>',
+'  <meta charset="utf-8">',
+'  <title>Bayou Bloom Florist | Fresh Flowers &amp; Same-Day Delivery in New Orleans</title>',
+'  <meta name="description" content="Bayou Bloom is a family-owned florist in New Orleans offering fresh arrangements, wedding flowers, and same-day delivery across the Greater New Orleans area.">',
+'  <meta property="og:title" content="Bayou Bloom Florist — New Orleans">',
+'  <meta property="og:type" content="business.business">',
+'  <meta property="og:image" content="https://example.com/storefront.jpg">',
+'  <script type="application/ld+json">',
+'  {',
+'    "@context": "https://schema.org",',
+'    "@type": "LocalBusiness",',
+'    "name": "Bayou Bloom Florist",',
+'    "description": "Family-owned florist specializing in fresh arrangements and same-day delivery in New Orleans.",',
+'    "telephone": "+1-504-555-0142",',
+'    "priceRange": "$$",',
+'    "address": {',
+'      "@type": "PostalAddress",',
+'      "streetAddress": "1820 Magazine St",',
+'      "addressLocality": "New Orleans",',
+'      "addressRegion": "LA",',
+'      "postalCode": "70130"',
+'    }',
+'  }',
+'  <\/script>',
+'  <script type="application/ld+json">',
+'  {',
+'    "@context": "https://schema.org",',
+'    "@type": "FAQPage",',
+'    "mainEntity": [',
+'      {',
+'        "@type": "Question",',
+'        "name": "Do you offer same-day flower delivery in New Orleans?",',
+'        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Order by 1pm and we deliver the same afternoon across Orleans and Jefferson Parish, with free delivery on orders over fifty dollars." }',
+'      },',
+'      {',
+'        "@type": "Question",',
+'        "name": "Can you handle wedding and event florals?",',
+'        "acceptedAnswer": { "@type": "Answer", "text": "Absolutely. Our designers plan bouquets, ceremony installations, and centerpieces with couples up to a year in advance. Book a free consultation to get started." }',
+'      }',
+'    ]',
+'  }',
+'  <\/script>',
+'  <style>.hero{padding:40px}</style>',
+'</head>',
+'<body>',
+'  <header>',
+'    <nav>',
+'      <a href="/">Home</a>',
+'      <a href="/shop">Shop</a>',
+'      <a href="/weddings">Weddings</a>',
+'      <a href="/contact">Contact</a>',
+'    </nav>',
+'  </header>',
+'  <main>',
+'    <h1>Fresh Flowers, Delivered the Same Day in New Orleans</h1>',
+'    <img src="/img/hero-bouquet.jpg" alt="A spring bouquet of tulips and ranunculus">',
+'    <p>Bayou Bloom is a family-owned florist on Magazine Street, hand-arranging fresh flowers for every occasion since 2009. From birthdays and anniversaries to sympathy arrangements and full wedding florals, we source seasonal stems daily and deliver across the Greater New Orleans area.</p>',
+'    <h3>Same-Day Delivery</h3>',
+'    <p>Order by 1pm and we will deliver your arrangement the same afternoon anywhere within Orleans and Jefferson Parish. Delivery is free on orders over fifty dollars, and we send a photo confirmation once your flowers arrive.</p>',
+'    <img src="/img/delivery-van.jpg">',
+'    <h2>Our Services</h2>',
+'    <ul>',
+'      <li>Same-day floral delivery</li>',
+'      <li>Wedding &amp; event florals</li>',
+'      <li>Sympathy &amp; funeral arrangements</li>',
+'      <li>Weekly subscriptions for offices and homes</li>',
+'    </ul>',
+'    <p class="updated">Updated <time datetime="2026-05-30">May 30, 2026</time></p>',
+'    <h2>Weddings &amp; Events</h2>',
+'    <p>Our designers work with couples up to a year in advance to plan bouquets, ceremony installations, and reception centerpieces that match your colors and venue. Book a free consultation to walk through samples and seasonal options.</p>',
+'    <p>Want to see more of our recent work? <a href="/gallery">click here</a> to browse the gallery, or <a href="/contact">reach our shop</a> for a quote.</p>',
+'    <img src="/img/wedding-arch.jpg">',
+'    <h3>Visit the Shop</h3>',
+'    <p>Find us at 1820 Magazine Street in the Lower Garden District, open Tuesday through Sunday. Stop in to smell the fresh stock or call ahead and we will have your order ready at the counter.</p>',
+'    <form>',
+'      <input type="text" name="fullname" placeholder="Your name">',
+'      <label for="email">Email</label>',
+'      <input type="email" id="email" name="email">',
+'      <button type="submit">Send</button>',
+'    </form>',
+'  </main>',
+'  <footer>',
+'    <p>&copy; 2026 Bayou Bloom Florist &middot; 1820 Magazine St, New Orleans, LA</p>',
+'  </footer>',
+'</body>',
+'</html>'
+        ].join('\n');
+    </script>
+</body>
+</html>
